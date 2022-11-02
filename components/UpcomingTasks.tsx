@@ -49,7 +49,7 @@ export const UpcomingTasks = ({ roomId }: Props) => {
             style={{ padding: "6px", marginTop: "6px", marginBottom: "6px" }}
           >
             <Link
-              href={`/${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
+              href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
             >
               <Typography sx={{ fontWeight: "bold" }}>{task.name}</Typography>
               <Typography> in </Typography>

@@ -43,7 +43,7 @@ export const OverdueTasks = ({ roomId }: Props) => {
         return (
           <Card key={task.id} sx={{ padding: "6px", marginVertical: "6px" }}>
             <Link
-              href={`/${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
+              href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
             >
               <Typography sx={{ fontWeight: "bold" }}>{task.name}</Typography>
               <Typography> in </Typography>
