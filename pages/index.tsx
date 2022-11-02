@@ -3,8 +3,8 @@ import { Card, Container, Fab, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
-import { OverdueTasks } from "../OverdueTasks";
-import { UpcomingTasks } from "../UpcomingTasks";
+import { OverdueTasks } from "../components/OverdueTasks";
+import { UpcomingTasks } from "../components/UpcomingTasks";
 
 export const Home = () => {
   const { rooms } = useRoomsQuery();
