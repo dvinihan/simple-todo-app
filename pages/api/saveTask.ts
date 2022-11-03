@@ -11,7 +11,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .collection("tasks")
       .updateOne({ id }, { $set: req.body }, { upsert: true });
     res.send(data);
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).send({ message: err.message });
   }
 };

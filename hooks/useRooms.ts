@@ -1,13 +1,10 @@
 import { useQuery } from "react-query";
 import { Room } from "../types";
-import Constants from "expo-constants";
 import { ROOMS_QUERY_KEY } from "../constants";
 
 export const useRoomsQuery = () => {
   const roomsQuery = useQuery(ROOMS_QUERY_KEY, () =>
-    fetch(
-      `${Constants.manifest?.extra?.SIMPLE_CLEANING_APP_API}/api/rooms`
-    ).then((res) => res.json())
+    fetch("/api/rooms").then((res) => res.json())
   );
 
   const { data = {} } = roomsQuery;

@@ -1,19 +1,29 @@
 import { useRouter } from "next/router";
-import { editTaskTitle, EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE } from "../constants";
+import {
+  editTaskTitle,
+  EDIT_ROOM_ROUTE,
+  EDIT_TASK_ROUTE,
+  HOME_ROUTE,
+} from "../constants";
 import { useTasksQuery } from "../hooks/useTasks";
 import { OverdueTasks } from "../components/OverdueTasks";
 import { UpcomingTasks } from "../components/UpcomingTasks";
-import { getRoomIdFromUrl } from "../helpers/url";
+import { getNumberUrlParam } from "../helpers/url";
 import { Card, Container, Fab, Typography } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 
 export const Tasks = () => {
   const router = useRouter();
-  const urlRoomId = getRoomIdFromUrl(router.query);
+  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
   const { tasks } = useTasksQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === urlRoomId);
+
+  if (urlRoomId === null) {
+    router.push(HOME_ROUTE);
+    return;
+  }
 
   return (
     <>

@@ -6,7 +6,7 @@ import { useSaveTask } from "../hooks/useSaveTask";
 import { useTasksQuery } from "../hooks/useTasks";
 import { Room, Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
-import { getRoomIdFromUrl, getTaskIdFromUrl } from "../helpers/url";
+import { getNumberUrlParam } from "../helpers/url";
 import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useRouter } from "next/router";
 import {
@@ -32,8 +32,8 @@ type TaskInputErrors = {
 
 export const EditTask = () => {
   const router = useRouter();
-  const urlTaskId = getTaskIdFromUrl(router.query);
-  const urlRoomId = getRoomIdFromUrl(router.query);
+  const urlTaskId = getNumberUrlParam(router.asPath, "taskId");
+  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();

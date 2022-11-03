@@ -15,7 +15,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       -1
     );
     res.send({ tasks: data, nextId: highestId + 1 });
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).send({ message: err.message });
   }
 };

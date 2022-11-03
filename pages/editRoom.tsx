@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
 import { DiscardModalContext } from "../context/DiscardModalContext";
-import { getRoomIdFromUrl } from "../helpers/url";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveRoom } from "../hooks/useSaveRoom";
@@ -22,6 +21,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
+import { getNumberUrlParam } from "../helpers/url";
 
 type RoomInputErrors = {
   name?: string;
@@ -29,7 +29,7 @@ type RoomInputErrors = {
 
 export const EditRoom = () => {
   const router = useRouter();
-  const urlRoomId = getRoomIdFromUrl(router.query);
+  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
   const queryClient = useQueryClient();
   const { rooms, nextId } = useRoomsQuery();

@@ -1,19 +1,19 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getNumberUrlParam } from "../../../helpers/url";
 import clientPromise from "../../../util/mongodb";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
-    const { id } = req.query;
+    const taskId = getNumberUrlParam(req.url, "taskId");
 
-    const stringId = typeof id === "string" ? id : id[0];
     const data = await client
       .db("simple-cleaning-app")
       .collection("tasks")
-      .deleteOne({ id: Number.parseInt(stringId) });
+      .deleteOne({ id: taskId });
     res.send(data);
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).send({ message: err.message });
   }
 };
