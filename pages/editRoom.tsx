@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
-import { DiscardModalContext } from "../../context/DiscardModalContext";
+import { DiscardModalContext } from "../context/DiscardModalContext";
 import { getRoomIdFromUrl } from "../helpers/url";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
 import { useRoomsQuery } from "../hooks/useRooms";
@@ -17,7 +17,6 @@ import {
   DialogContentText,
   DialogTitle,
   Fab,
-  Input,
   Modal,
   TextField,
   Typography,
