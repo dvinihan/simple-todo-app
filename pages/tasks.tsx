@@ -11,14 +11,18 @@ import { UpcomingTasks } from "../components/UpcomingTasks";
 import { getNumberUrlParam } from "../helpers/url";
 import { Card, Container, Fab, Typography } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
+import { NavBar } from "../components/NavBar";
+import { useRoomsQuery } from "../hooks/useRooms";
 
-export const Tasks = () => {
+const Tasks = () => {
   const router = useRouter();
   const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
   const { tasks } = useTasksQuery();
+  const { rooms } = useRoomsQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === urlRoomId);
+  const roomName = rooms.find((room) => room.id === task.roomId)?.name;
 
   if (urlRoomId === null) {
     router.push(HOME_ROUTE);
@@ -27,6 +31,7 @@ export const Tasks = () => {
 
   return (
     <>
+      <NavBar title={} />
       <Container>
         <OverdueTasks roomId={urlRoomId} />
         <UpcomingTasks roomId={urlRoomId} />
@@ -64,3 +69,5 @@ export const Tasks = () => {
     </>
   );
 };
+
+export default Tasks;

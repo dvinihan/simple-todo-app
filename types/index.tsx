@@ -1,4 +1,4 @@
-import { Frequency } from "./constants";
+import { Frequency } from "../constants";
 
 export class Room {
   id: number;

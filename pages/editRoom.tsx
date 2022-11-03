@@ -22,12 +22,13 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { getNumberUrlParam } from "../helpers/url";
+import { NavBar } from "../components/NavBar";
 
 type RoomInputErrors = {
   name?: string;
 };
 
-export const EditRoom = () => {
+const EditRoom = () => {
   const router = useRouter();
   const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
@@ -78,6 +79,7 @@ export const EditRoom = () => {
 
   return (
     <>
+      <NavBar title="Edit Room" />
       <TextField
         label="Name"
         value={room?.name}
@@ -168,3 +170,5 @@ export const EditRoom = () => {
     </>
   );
 };
+
+export default EditRoom;

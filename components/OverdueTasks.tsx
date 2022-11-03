@@ -45,18 +45,19 @@ export const OverdueTasks = ({ roomId }: Props) => {
             <Link
               href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
             >
-              <Typography sx={{ fontWeight: "bold" }}>{task.name}</Typography>
-              <Typography> in </Typography>
-              <Typography sx={{ fontWeight: "bold" }}>
-                {room?.name},{" "}
-              </Typography>
-              <Typography sx={{ color: "red" }}>
-                {task.daysUntilDue === 0
-                  ? "Due today"
-                  : `${formatDuration({
-                      days: task.daysUntilDue * -1,
-                    })} overdue`}
-              </Typography>
+              <>
+                <Typography>
+                  <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
+                  <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
+                  <span style={{ color: "red" }}>
+                    {task.daysUntilDue === 0
+                      ? "Due today"
+                      : `${formatDuration({
+                          days: task.daysUntilDue * -1,
+                        })} overdue`}
+                  </span>
+                </Typography>
+              </>
             </Link>
           </Card>
         );

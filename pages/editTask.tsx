@@ -25,12 +25,13 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
+import { NavBar } from "../components/NavBar";
 
 type TaskInputErrors = {
   name?: string;
 };
 
-export const EditTask = () => {
+const EditTask = () => {
   const router = useRouter();
   const urlTaskId = getNumberUrlParam(router.asPath, "taskId");
   const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
@@ -148,6 +149,7 @@ export const EditTask = () => {
 
   return (
     <>
+      <NavBar title="Edit Task" />
       <TextField
         label="Name"
         value={task?.name}
@@ -324,3 +326,5 @@ export const EditTask = () => {
     </>
   );
 };
+
+export default EditTask;

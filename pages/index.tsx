@@ -5,13 +5,15 @@ import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { OverdueTasks } from "../components/OverdueTasks";
 import { UpcomingTasks } from "../components/UpcomingTasks";
+import { NavBar } from "../components/NavBar";
 
-export const Home = () => {
+const Home = () => {
   const { rooms } = useRoomsQuery();
   const router = useRouter();
 
   return (
     <>
+      <NavBar title="Rooms" />
       <Container>
         <OverdueTasks />
         <UpcomingTasks />
@@ -49,3 +51,5 @@ export const Home = () => {
     </>
   );
 };
+
+export default Home;

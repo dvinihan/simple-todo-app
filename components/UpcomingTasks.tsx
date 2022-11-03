@@ -4,7 +4,7 @@ import { TaskWithDaysUntilDue } from "../types";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { getDaysUntilDue, getFrequencyInDays } from "../helpers/tasks";
 import { formatDuration } from "date-fns";
-import { Card, Typography } from "@mui/material";
+import { Card, Container, Typography } from "@mui/material";
 import Link from "next/link";
 
 type Props = {
@@ -51,14 +51,13 @@ export const UpcomingTasks = ({ roomId }: Props) => {
             <Link
               href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`}
             >
-              <Typography sx={{ fontWeight: "bold" }}>{task.name}</Typography>
-              <Typography> in </Typography>
-              <Typography sx={{ fontWeight: "bold" }}>
-                {room?.name},{" "}
-              </Typography>
-              <Typography>
-                due in {formatDuration({ days: task.daysUntilDue })}
-              </Typography>
+              <>
+                <Typography>
+                  <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
+                  <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
+                  due in {formatDuration({ days: task.daysUntilDue })}
+                </Typography>
+              </>
             </Link>
           </Card>
         );
