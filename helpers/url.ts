@@ -2,7 +2,7 @@ export const getStringUrlParam = (
   url: string | undefined,
   paramName: string
 ) => {
-  const searchParams = new URL(url ?? "").searchParams;
+  const searchParams = new URL(url ?? "", window.location.origin).searchParams;
   return searchParams.get(paramName) ?? "";
 };
 

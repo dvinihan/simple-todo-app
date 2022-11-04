@@ -1,14 +1,14 @@
 import { Add } from "@mui/icons-material";
-import { Box, Card, Fab, Typography } from "@mui/material";
-import { useRouter } from "next/router";
+import { Box, Fab } from "@mui/material";
 import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { NavBar } from "../components/NavBar";
 import { FocusedTaskList } from "../components/FocusedTaskList";
+import { ListItem } from "../components/ListItem";
+import Link from "next/link";
 
 const Home = () => {
   const { rooms } = useRoomsQuery();
-  const router = useRouter();
 
   return (
     <>
@@ -17,32 +17,23 @@ const Home = () => {
         <FocusedTaskList type="overdue" />
         <FocusedTaskList type="upcoming" />
         {rooms.map((room) => (
-          <Card
+          <ListItem
             key={room.id}
-            onClick={() => {
-              router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
-            }}
-            sx={{
-              marginTop: "10px",
-            }}
-            variant="outlined"
-          >
-            <Typography title={room.name} />
-          </Card>
+            href={`${TASKS_ROUTE}?roomId=${room.id}`}
+            text={room.name}
+          />
         ))}
       </Box>
       <Fab
-        onClick={() => {
-          router.push(`${EDIT_ROOM_ROUTE}`);
-        }}
         sx={{
-          position: "absolute",
-          margin: 16,
-          right: 0,
-          bottom: 0,
+          position: "fixed",
+          bottom: "16px",
+          right: "16px",
         }}
       >
-        <Add />
+        <Link href={`${EDIT_ROOM_ROUTE}`}>
+          <Add />
+        </Link>
       </Fab>
     </>
   );

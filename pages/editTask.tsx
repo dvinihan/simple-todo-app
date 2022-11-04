@@ -164,7 +164,7 @@ const EditTask = () => {
       )}
       <Card onClick={showRoomDialog}>
         <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
-          <Typography sx={{ fontSize: 18 }}>Room: {roomName}</Typography>
+          <Typography fontSize={"18px"}>Room: {roomName}</Typography>
         </Container>
       </Card>
       <Container
@@ -197,7 +197,7 @@ const EditTask = () => {
       </Container>
       <Card onClick={showDatePicker}>
         <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
-          <Typography sx={{ fontSize: 18 }}>
+          <Typography fontSize={"18px"}>
             Last completed: {task.lastDone.toDateString()}
           </Typography>
         </Container>

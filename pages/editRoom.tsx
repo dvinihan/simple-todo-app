@@ -90,7 +90,7 @@ const EditRoom = () => {
         sx={{ marginBottom: "10px" }}
       />
       {errors.name && (
-        <Typography sx={{ color: "red", fontSize: 18 }}>
+        <Typography color={"red"} fontSize={"18px"}>
           {errors.name}
         </Typography>
       )}

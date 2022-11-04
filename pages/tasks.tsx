@@ -2,11 +2,13 @@ import { useRouter } from "next/router";
 import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE, HOME_ROUTE } from "../constants";
 import { useTasksQuery } from "../hooks/useTasks";
 import { getNumberUrlParam } from "../helpers/url";
-import { Card, Container, Fab, Typography } from "@mui/material";
+import { Box, Container, Fab } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 import { NavBar } from "../components/NavBar";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
+import Link from "next/link";
+import { ListItem } from "../components/ListItem";
 
 const Tasks = () => {
   const router = useRouter();
@@ -26,37 +28,26 @@ const Tasks = () => {
   return (
     <>
       <NavBar title={roomName ?? ""} />
-      <Container>
+      <Box>
         <FocusedTaskList type="overdue" roomId={urlRoomId} />
         <FocusedTaskList type="upcoming" roomId={urlRoomId} />
         {tasksInRoom.map((task) => (
-          <Card
+          <ListItem
             key={task.id}
-            onClick={() => {
-              router.push(`${EDIT_TASK_ROUTE}?taskId=${task.id}`);
-            }}
-            sx={{ marginTop: "10px" }}
-            variant="outlined"
-          >
-            <Typography title={task.name} />
-          </Card>
+            href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}
+            text={task.name}
+          />
         ))}
-      </Container>
-      <Fab
-        onClick={() => {
-          router.push(`${EDIT_TASK_ROUTE}?title=New Task&roomId=${urlRoomId}`);
-        }}
-        sx={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
-      >
-        <Add />
+      </Box>
+      <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
+        <Link href={`${EDIT_ROOM_ROUTE}?roomId=${urlRoomId}`}>
+          <Edit />
+        </Link>
       </Fab>
-      <Fab
-        onClick={() => {
-          router.push(`${EDIT_ROOM_ROUTE}?title=Edit Room&roomId=${urlRoomId}`);
-        }}
-        sx={{ position: "absolute", margin: 16, right: 72, bottom: 0 }}
-      >
-        <Edit />
+      <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
+        <Link href={`${EDIT_TASK_ROUTE}?roomId=${urlRoomId}`}>
+          <Add />
+        </Link>
       </Fab>
     </>
   );

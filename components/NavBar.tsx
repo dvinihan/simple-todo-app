@@ -9,7 +9,7 @@ export const NavBar = ({ title }: Props) => {
     <>
       <AppBar>
         <Toolbar>
-          <Typography variant="h4">{title}</Typography>
+          <Typography fontSize={"30px"}>{title}</Typography>
         </Toolbar>
       </AppBar>
       <Box sx={{ marginBottom: "66px" }}></Box>
