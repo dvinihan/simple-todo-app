@@ -1,4 +1,4 @@
-import { AppBar, Typography } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 
 type Props = {
   title: string;
@@ -6,8 +6,13 @@ type Props = {
 
 export const NavBar = ({ title }: Props) => {
   return (
-    <AppBar>
-      <Typography>{title}</Typography>
-    </AppBar>
+    <>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h4">{title}</Typography>
+        </Toolbar>
+      </AppBar>
+      <Box sx={{ marginBottom: "66px" }}></Box>
+    </>
   );
 };

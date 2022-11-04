@@ -1,18 +1,12 @@
 import { useRouter } from "next/router";
-import {
-  editTaskTitle,
-  EDIT_ROOM_ROUTE,
-  EDIT_TASK_ROUTE,
-  HOME_ROUTE,
-} from "../constants";
+import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE, HOME_ROUTE } from "../constants";
 import { useTasksQuery } from "../hooks/useTasks";
-import { OverdueTasks } from "../components/OverdueTasks";
-import { UpcomingTasks } from "../components/UpcomingTasks";
 import { getNumberUrlParam } from "../helpers/url";
 import { Card, Container, Fab, Typography } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 import { NavBar } from "../components/NavBar";
 import { useRoomsQuery } from "../hooks/useRooms";
+import { FocusedTaskList } from "../components/FocusedTaskList";
 
 const Tasks = () => {
   const router = useRouter();
@@ -22,7 +16,7 @@ const Tasks = () => {
   const { rooms } = useRoomsQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === urlRoomId);
-  const roomName = rooms.find((room) => room.id === task.roomId)?.name;
+  const roomName = rooms.find((room) => room.id === urlRoomId)?.name;
 
   if (urlRoomId === null) {
     router.push(HOME_ROUTE);
@@ -31,19 +25,17 @@ const Tasks = () => {
 
   return (
     <>
-      <NavBar title={} />
+      <NavBar title={roomName ?? ""} />
       <Container>
-        <OverdueTasks roomId={urlRoomId} />
-        <UpcomingTasks roomId={urlRoomId} />
+        <FocusedTaskList type="overdue" roomId={urlRoomId} />
+        <FocusedTaskList type="upcoming" roomId={urlRoomId} />
         {tasksInRoom.map((task) => (
           <Card
             key={task.id}
             onClick={() => {
-              router.push(
-                `${EDIT_TASK_ROUTE}?taskId=${task.id}&title=${editTaskTitle}`
-              );
+              router.push(`${EDIT_TASK_ROUTE}?taskId=${task.id}`);
             }}
-            sx={{ marginTop: "10px", marginHorizontal: "10px" }}
+            sx={{ marginTop: "10px" }}
             variant="outlined"
           >
             <Typography title={task.name} />

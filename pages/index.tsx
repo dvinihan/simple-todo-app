@@ -1,11 +1,10 @@
 import { Add } from "@mui/icons-material";
-import { Card, Container, Fab, Typography } from "@mui/material";
+import { Box, Card, Fab, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
-import { OverdueTasks } from "../components/OverdueTasks";
-import { UpcomingTasks } from "../components/UpcomingTasks";
 import { NavBar } from "../components/NavBar";
+import { FocusedTaskList } from "../components/FocusedTaskList";
 
 const Home = () => {
   const { rooms } = useRoomsQuery();
@@ -14,30 +13,27 @@ const Home = () => {
   return (
     <>
       <NavBar title="Rooms" />
-      <Container>
-        <OverdueTasks />
-        <UpcomingTasks />
+      <Box>
+        <FocusedTaskList type="overdue" />
+        <FocusedTaskList type="upcoming" />
         {rooms.map((room) => (
           <Card
             key={room.id}
             onClick={() => {
-              router.push(
-                `${TASKS_ROUTE}?roomId=${room.id}&title=${room.name}`
-              );
+              router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
             }}
             sx={{
               marginTop: "10px",
-              marginHorizontal: "10px",
             }}
             variant="outlined"
           >
             <Typography title={room.name} />
           </Card>
         ))}
-      </Container>
+      </Box>
       <Fab
         onClick={() => {
-          router.push(`${EDIT_ROOM_ROUTE}?title=New Room`);
+          router.push(`${EDIT_ROOM_ROUTE}`);
         }}
         sx={{
           position: "absolute",

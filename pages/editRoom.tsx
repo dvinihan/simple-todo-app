@@ -38,7 +38,7 @@ const EditRoom = () => {
   const { mutate: saveRoom, isLoading } = useSaveRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      router.push(`${TASKS_ROUTE}?roomId=${roomId}&title=${room.name}`);
+      router.push(`${TASKS_ROUTE}?roomId=${roomId}`);
     },
   });
   const { mutate: doDelete } = useDeleteRoom({
@@ -90,9 +90,7 @@ const EditRoom = () => {
         sx={{ marginBottom: "10px" }}
       />
       {errors.name && (
-        <Typography
-          sx={{ marginHorizontal: "10px", color: "red", fontSize: 18 }}
-        >
+        <Typography sx={{ color: "red", fontSize: 18 }}>
           {errors.name}
         </Typography>
       )}

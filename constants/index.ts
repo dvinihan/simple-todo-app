@@ -12,5 +12,3 @@ export enum Frequency {
   MONTHS = "months",
   YEARS = "years",
 }
-
-export const editTaskTitle = "Edit Task";

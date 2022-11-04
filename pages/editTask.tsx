@@ -160,9 +160,7 @@ const EditTask = () => {
         sx={{ marginBottom: "10px" }}
       />
       {errors.name && (
-        <Alert sx={{ marginHorizontal: "10px", color: "red", fontSize: 18 }}>
-          {errors.name}
-        </Alert>
+        <Alert sx={{ color: "red", fontSize: 18 }}>{errors.name}</Alert>
       )}
       <Card onClick={showRoomDialog}>
         <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
@@ -175,7 +173,6 @@ const EditTask = () => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-around",
-          marginVertical: "10px",
         }}
       >
         <Typography>Every</Typography>
