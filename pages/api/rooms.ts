@@ -1,5 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { Room } from "../../types";
 import clientPromise from "../../util/mongodb";
+
+export type RoomsApiResponse = {
+  rooms: Room[];
+};
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {

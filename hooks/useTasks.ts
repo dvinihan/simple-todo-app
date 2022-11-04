@@ -1,25 +1,9 @@
 import { useQuery } from "react-query";
-import { Task } from "../types";
 import { TASKS_QUERY_KEY } from "../constants";
+import { TasksApiResponse } from "../pages/api/tasks";
 
 export const useTasksQuery = () => {
-  const tasksQuery = useQuery(TASKS_QUERY_KEY, () =>
-    fetch("/api/tasks").then((res) => res.json())
-  );
-
-  const { data = {} } = tasksQuery;
-  const sanitizedTasks = sanitizeTasksData(data.tasks);
-
-  return {
-    ...tasksQuery,
-    tasks: sanitizedTasks,
-    nextId: data.nextId,
-  };
+  return useQuery<void, any, TasksApiResponse>(TASKS_QUERY_KEY, getTasks);
 };
 
-const sanitizeTasksData = (data: unknown) => {
-  if (!Array.isArray(data)) {
-    return [];
-  }
-  return data.map((item) => new Task(item));
-};
+export const getTasks = () => fetch("/api/tasks").then((res) => res.json());

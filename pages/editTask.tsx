@@ -1,10 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
-import { Frequency, TASKS_QUERY_KEY } from "../constants";
-import { useRoomsQuery } from "../hooks/useRooms";
+import { dehydrate, QueryClient, useQueryClient } from "react-query";
+import { Frequency, ROOMS_QUERY_KEY, TASKS_QUERY_KEY } from "../constants";
+import { getRooms, useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
-import { useTasksQuery } from "../hooks/useTasks";
-import { Room, Task } from "../types";
+import { getTasks } from "../hooks/useTasks";
+import { NULL_ROOM_ID, NULL_TASK_ID, Room, Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
 import { getNumberUrlParam } from "../helpers/url";
 import { DiscardModalContext } from "../context/DiscardModalContext";
@@ -26,19 +26,24 @@ import {
 import { Delete } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import { NavBar } from "../components/NavBar";
+import { GetServerSideProps } from "next";
+import { TasksApiResponse } from "./api/tasks";
+import { RoomsApiResponse } from "./api/rooms";
+
+type Props = {
+  initialTask: Task | undefined;
+  title: string;
+  rooms: Room[];
+};
 
 type TaskInputErrors = {
   name?: string;
 };
 
-const EditTask = () => {
+const EditTask = ({ initialTask, title, rooms }: Props) => {
   const router = useRouter();
-  const urlTaskId = getNumberUrlParam(router.asPath, "taskId");
-  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
 
   const queryClient = useQueryClient();
-  const { rooms } = useRoomsQuery();
-  const { tasks, nextId: nextTaskId } = useTasksQuery();
   const { mutate: saveTask } = useSaveTask({
     onSettled: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
@@ -63,15 +68,6 @@ const EditTask = () => {
     useContext(DiscardModalContext) ?? {};
 
   const [errors, setErrors] = useState<TaskInputErrors>({});
-
-  useEffect(() => {
-    const initialTask =
-      tasks.find((task) => task.id === urlTaskId) ?? new Task();
-
-    const roomId = urlRoomId ?? initialTask?.roomId ?? task.roomId;
-
-    setTask({ ...initialTask, roomId });
-  }, [task.roomId, tasks, urlRoomId, urlTaskId]);
 
   const showAlert = useCallback(
     (e: Event) => {
@@ -129,10 +125,7 @@ const EditTask = () => {
     if (!taskToSave.name) {
       setErrors((e) => ({ ...e, name: "You must enter a task name" }));
     } else {
-      saveTask({
-        ...taskToSave,
-        id: urlTaskId ?? nextTaskId,
-      });
+      saveTask(taskToSave);
       setHasChanges(false);
     }
   };
@@ -143,13 +136,17 @@ const EditTask = () => {
 
   const roomName = rooms.find((room) => room.id === task.roomId)?.name ?? "";
 
-  if (!task) {
-    return null;
+  if (
+    !initialTask ||
+    initialTask.id === NULL_TASK_ID ||
+    initialTask.roomId === NULL_ROOM_ID
+  ) {
+    return <Typography>------ERROR------</Typography>;
   }
 
   return (
     <>
-      <NavBar title="Edit Task" />
+      <NavBar title={title} />
       <TextField
         label="Name"
         value={task?.name}
@@ -323,5 +320,37 @@ const EditTask = () => {
     </>
   );
 };
-
 export default EditTask;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery(TASKS_QUERY_KEY, getTasks);
+  await queryClient.prefetchQuery(ROOMS_QUERY_KEY, getRooms);
+
+  const { tasks, nextId } =
+    queryClient.getQueryData<TasksApiResponse>(TASKS_QUERY_KEY) ?? {};
+  const { rooms } =
+    queryClient.getQueryData<RoomsApiResponse>(ROOMS_QUERY_KEY) ?? {};
+
+  let initialTask: Task | undefined;
+  let title: string = "";
+  if (context.query.taskId !== undefined) {
+    const taskId = getNumberUrlParam(context.query, "taskId");
+    initialTask = tasks?.find((task) => task.id === taskId);
+    title = "Edit Task";
+  } else if (context.query.roomId !== undefined) {
+    const roomId = getNumberUrlParam(context.query, "roomId");
+    initialTask = new Task({ roomId, id: nextId });
+    title = "New Task";
+  }
+
+  return {
+    props: {
+      dehydratedState: dehydrate(queryClient),
+      initialTask,
+      title,
+      rooms,
+    },
+  };
+};

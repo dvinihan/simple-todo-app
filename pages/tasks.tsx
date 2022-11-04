@@ -1,29 +1,24 @@
-import { useRouter } from "next/router";
-import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE, HOME_ROUTE } from "../constants";
+import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE } from "../constants";
 import { useTasksQuery } from "../hooks/useTasks";
 import { getNumberUrlParam } from "../helpers/url";
-import { Box, Container, Fab } from "@mui/material";
+import { Box, Fab } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 import { NavBar } from "../components/NavBar";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import Link from "next/link";
 import { ListItem } from "../components/ListItem";
+import { useRouter } from "next/router";
 
 const Tasks = () => {
   const router = useRouter();
-  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
+  const urlRoomId = getNumberUrlParam(router.query, "roomId");
 
   const { tasks } = useTasksQuery();
   const { rooms } = useRoomsQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === urlRoomId);
   const roomName = rooms.find((room) => room.id === urlRoomId)?.name;
-
-  if (urlRoomId === null) {
-    router.push(HOME_ROUTE);
-    return;
-  }
 
   return (
     <>

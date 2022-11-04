@@ -1,15 +1,16 @@
-export const getStringUrlParam = (
-  url: string | undefined,
-  paramName: string
-) => {
-  const searchParams = new URL(url ?? "", window.location.origin).searchParams;
-  return searchParams.get(paramName) ?? "";
-};
+import { ParsedUrlQuery } from "querystring";
 
 export const getNumberUrlParam = (
-  url: string | undefined,
+  urlQuery: ParsedUrlQuery,
   paramName: string
 ) => {
-  const stringUrlParam = getStringUrlParam(url, paramName);
-  return stringUrlParam ? Number(stringUrlParam) : null;
+  const stringUrlParam = urlQuery[paramName];
+  switch (typeof stringUrlParam) {
+    case "string":
+      return Number(stringUrlParam);
+    case "object":
+      return Number(stringUrlParam[0]);
+    default:
+      return undefined;
+  }
 };

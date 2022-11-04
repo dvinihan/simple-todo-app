@@ -30,7 +30,7 @@ type RoomInputErrors = {
 
 const EditRoom = () => {
   const router = useRouter();
-  const urlRoomId = getNumberUrlParam(router.asPath, "roomId");
+  const urlRoomId = getNumberUrlParam(router.query, "roomId");
 
   const queryClient = useQueryClient();
   const { rooms, nextId } = useRoomsQuery();

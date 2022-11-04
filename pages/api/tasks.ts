@@ -1,5 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { Task } from "../../types";
 import clientPromise from "../../util/mongodb";
+
+export type TasksApiResponse = {
+  tasks: Task[];
+  nextId: number;
+};
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {

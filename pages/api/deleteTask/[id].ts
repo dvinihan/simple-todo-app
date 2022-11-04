@@ -6,7 +6,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
-    const taskId = getNumberUrlParam(req.url, "taskId");
+    const taskId = getNumberUrlParam(req.query, "taskId");
 
     const data = await client
       .db("simple-cleaning-app")
