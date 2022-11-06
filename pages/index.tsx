@@ -1,14 +1,19 @@
 import { Add } from "@mui/icons-material";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Typography } from "@mui/material";
 import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { NavBar } from "../components/NavBar";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import { ListItem } from "../components/ListItem";
 import Link from "next/link";
+import { Loading } from "../components/Loading";
 
 const Home = () => {
-  const { rooms } = useRoomsQuery();
+  const { rooms, isLoading } = useRoomsQuery();
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>

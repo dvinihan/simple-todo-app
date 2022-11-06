@@ -1,10 +1,10 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { dehydrate, QueryClient, useQueryClient } from "react-query";
-import { Frequency, ROOMS_QUERY_KEY, TASKS_QUERY_KEY } from "../constants";
-import { getRooms, useRoomsQuery } from "../hooks/useRooms";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "react-query";
+import { Frequency, TASKS_QUERY_KEY } from "../constants";
+import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
-import { getTasks } from "../hooks/useTasks";
-import { NULL_ROOM_ID, NULL_TASK_ID, Room, Task } from "../types";
+import { useTasksQuery } from "../hooks/useTasks";
+import { NULL_TASK_ID, Room, Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
 import { getNumberUrlParam } from "../helpers/url";
 import { DiscardModalContext } from "../context/DiscardModalContext";
@@ -26,24 +26,19 @@ import {
 import { Delete } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import { NavBar } from "../components/NavBar";
-import { GetServerSideProps } from "next";
-import { TasksApiResponse } from "./api/tasks";
-import { RoomsApiResponse } from "./api/rooms";
-
-type Props = {
-  initialTask: Task | undefined;
-  title: string;
-  rooms: Room[];
-};
 
 type TaskInputErrors = {
   name?: string;
 };
 
-const EditTask = ({ initialTask, title, rooms }: Props) => {
-  const router = useRouter();
+type Props = {
+  initialTask: Task;
+};
 
+const EditTask = ({ initialTask }: Props) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const { rooms } = useRoomsQuery();
   const { mutate: saveTask } = useSaveTask({
     onSettled: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
@@ -57,7 +52,11 @@ const EditTask = ({ initialTask, title, rooms }: Props) => {
     },
   });
 
-  const [task, setTask] = useState(new Task());
+  const [task, setTask] = useState(initialTask);
+
+  const isNewTask = task.id === NULL_TASK_ID;
+  const title = isNewTask ? "New Task" : "Edit Task";
+
   const [isRoomDialogVisible, setIsRoomDialogVisible] = useState(false);
   const [isFreqDialogVisible, setIsFreqDialogVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -134,22 +133,17 @@ const EditTask = ({ initialTask, title, rooms }: Props) => {
     doDelete(task.id);
   };
 
-  const roomName = rooms.find((room) => room.id === task.roomId)?.name ?? "";
-
-  if (
-    !initialTask ||
-    initialTask.id === NULL_TASK_ID ||
-    initialTask.roomId === NULL_ROOM_ID
-  ) {
-    return <Typography>------ERROR------</Typography>;
-  }
+  const roomName = useMemo(
+    () => rooms.find((room) => room.id === task.roomId)?.name ?? "",
+    [rooms, task.roomId]
+  );
 
   return (
     <>
       <NavBar title={title} />
       <TextField
         label="Name"
-        value={task?.name}
+        value={task.name}
         onChange={(e) => {
           setTask({ ...task, name: e.target.value });
           setHasChanges(true);
@@ -320,37 +314,35 @@ const EditTask = ({ initialTask, title, rooms }: Props) => {
     </>
   );
 };
-export default EditTask;
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery(TASKS_QUERY_KEY, getTasks);
-  await queryClient.prefetchQuery(ROOMS_QUERY_KEY, getRooms);
-
-  const { tasks, nextId } =
-    queryClient.getQueryData<TasksApiResponse>(TASKS_QUERY_KEY) ?? {};
-  const { rooms } =
-    queryClient.getQueryData<RoomsApiResponse>(ROOMS_QUERY_KEY) ?? {};
-
-  let initialTask: Task | undefined;
-  let title: string = "";
-  if (context.query.taskId !== undefined) {
-    const taskId = getNumberUrlParam(context.query, "taskId");
-    initialTask = tasks?.find((task) => task.id === taskId);
-    title = "Edit Task";
-  } else if (context.query.roomId !== undefined) {
-    const roomId = getNumberUrlParam(context.query, "roomId");
-    initialTask = new Task({ roomId, id: nextId });
-    title = "New Task";
-  }
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-      initialTask,
-      title,
-      rooms,
+const EditTaskContainer = () => {
+  const router = useRouter();
+  const { tasks, nextId } = useTasksQuery({
+    onSuccess: () => {
+      handleTasksQuerySuccess();
     },
-  };
+  });
+
+  const [initialTask, setInitialTask] = useState<Task | undefined>();
+
+  const handleTasksQuerySuccess = useCallback(() => {
+    // using router.asPath (or window, of course) in the URL constructor will fail on the server: https://nextjs.org/docs/api-reference/next/router#router-object
+    try {
+      const taskId = getNumberUrlParam(
+        new URL(router.asPath, window.location.origin),
+        "taskId"
+      );
+      const roomId = getNumberUrlParam(
+        new URL(router.asPath, window.location.origin),
+        "roomId"
+      );
+      setInitialTask(
+        tasks.find((t) => t.id === taskId) ?? new Task({ roomId, id: nextId })
+      );
+    } catch {}
+  }, [nextId, router.asPath, tasks]);
+
+  return initialTask ? <EditTask initialTask={initialTask} /> : null;
 };
+
+export default EditTaskContainer;

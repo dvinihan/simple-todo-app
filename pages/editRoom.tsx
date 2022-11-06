@@ -6,7 +6,7 @@ import { useDeleteRoom } from "../hooks/useDeleteRoom";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveRoom } from "../hooks/useSaveRoom";
 import { Room } from "../types";
-import { useRouter } from "next/router";
+import { NextRouter } from "next/router";
 import {
   Button,
   CircularProgress,
@@ -28,9 +28,15 @@ type RoomInputErrors = {
   name?: string;
 };
 
-const EditRoom = () => {
-  const router = useRouter();
-  const urlRoomId = getNumberUrlParam(router.query, "roomId");
+type Props = {
+  readyRouter: NextRouter;
+};
+
+const EditRoom = ({ readyRouter }: Props) => {
+  const urlRoomId = getNumberUrlParam(
+    new URL(readyRouter.asPath, window.location.origin),
+    "roomId"
+  );
 
   const queryClient = useQueryClient();
   const { rooms, nextId } = useRoomsQuery();
@@ -38,13 +44,13 @@ const EditRoom = () => {
   const { mutate: saveRoom, isLoading } = useSaveRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      router.push(`${TASKS_ROUTE}?roomId=${roomId}`);
+      readyRouter.push(`${TASKS_ROUTE}?roomId=${roomId}`);
     },
   });
   const { mutate: doDelete } = useDeleteRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      router.push(HOME_ROUTE);
+      readyRouter.push(HOME_ROUTE);
     },
   });
 
@@ -168,5 +174,4 @@ const EditRoom = () => {
     </>
   );
 };
-
 export default EditRoom;

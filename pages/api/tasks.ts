@@ -1,19 +1,23 @@
+import { WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Task } from "../../types";
 import clientPromise from "../../util/mongodb";
 
 export type TasksApiResponse = {
-  tasks: Task[];
+  tasks: WithId<Task>[];
   nextId: number;
 };
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<TasksApiResponse | Error>
+) => {
   try {
     const client = await clientPromise;
 
     const data = await client
       .db("simple-cleaning-app")
-      .collection("tasks")
+      .collection<Task>("tasks")
       .find()
       .toArray();
     const highestId = data.reduce(
@@ -22,6 +26,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     );
     res.send({ tasks: data, nextId: highestId + 1 });
   } catch (err: any) {
-    res.status(500).send({ message: err.message });
+    res.status(500).send({ name: "tasks error", message: err.message });
   }
 };

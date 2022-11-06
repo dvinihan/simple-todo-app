@@ -1,3 +1,4 @@
+import { Document } from "mongodb";
 import { Frequency } from "../constants";
 
 export const NULL_ROOM_ID = -1;
