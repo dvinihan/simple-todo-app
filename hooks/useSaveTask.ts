@@ -2,7 +2,7 @@ import { useMutation, UseMutationOptions } from "react-query";
 import { Task } from "../types";
 
 export const useSaveTask = (options: UseMutationOptions<Task, any, Task>) => {
-  return useMutation<Task, any, Task>(async (newTask: Task) => {
+  return useMutation(async (newTask: Task) => {
     const response = await fetch("/api/saveTask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

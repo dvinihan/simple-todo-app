@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
-import { Frequency, TASKS_QUERY_KEY } from "../constants";
+import { Frequency, HOME_ROUTE, TASKS_QUERY_KEY } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
 import { useTasksQuery } from "../hooks/useTasks";
@@ -44,15 +44,15 @@ const EditTask = ({ initialTask }: Props) => {
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
   const { mutate: saveTask } = useSaveTask({
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.back();
+      router.push(HOME_ROUTE);
     },
   });
   const { mutate: doDelete } = useDeleteTask({
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.back();
+      router.push(HOME_ROUTE);
     },
   });
 
