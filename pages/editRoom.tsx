@@ -5,8 +5,8 @@ import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveRoom } from "../hooks/useSaveRoom";
-import { Room } from "../types";
-import { NextRouter } from "next/router";
+import { NULL_ROOM_ID, Room } from "../types";
+import { useRouter } from "next/router";
 import {
   Button,
   CircularProgress,
@@ -21,60 +21,49 @@ import {
   Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-import { getNumberUrlParam } from "../helpers/url";
 import { NavBar } from "../components/NavBar";
-
-type RoomInputErrors = {
-  name?: string;
-};
+import { useIdParams } from "../hooks/useIdParams";
+import { Loading } from "../components/Loading";
 
 type Props = {
-  readyRouter: NextRouter;
+  initialRoom: Room;
 };
 
-const EditRoom = ({ readyRouter }: Props) => {
-  const urlRoomId = getNumberUrlParam(
-    new URL(readyRouter.asPath, window.location.origin),
-    "roomId"
-  );
+const EditRoom = ({ initialRoom }: Props) => {
+  const [room, setRoom] = useState(initialRoom);
+  const title = room.id === NULL_ROOM_ID ? "New Room" : "Edit Room";
 
+  const router = useRouter();
   const queryClient = useQueryClient();
-  const { rooms, nextId } = useRoomsQuery();
-  const roomId = urlRoomId ?? nextId;
-  const { mutate: saveRoom, isLoading } = useSaveRoom({
-    onSettled: () => {
-      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      readyRouter.push(`${TASKS_ROUTE}?roomId=${roomId}`);
-    },
-  });
-  const { mutate: doDelete } = useDeleteRoom({
-    onSettled: () => {
-      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      readyRouter.push(HOME_ROUTE);
-    },
-  });
 
-  const [room, setRoom] = useState(new Room());
-  const [errors, setErrors] = useState<RoomInputErrors>({});
+  const [errors, setErrors] = useState<{ name?: string }>({});
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
   const { discardModalState, setDiscardModalState } =
     useContext(DiscardModalContext) ?? {};
 
+  const { mutate: saveRoom, isLoading } = useSaveRoom({
+    onSettled: () => {
+      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
+      router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
+    },
+  });
+  const { mutate: doDelete } = useDeleteRoom({
+    onSettled: () => {
+      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
+      router.push(HOME_ROUTE);
+    },
+  });
+
   const setHasChanges = (hasChanges: boolean) => {
     setDiscardModalState?.({ show: false, action: () => {}, hasChanges });
   };
-
-  useEffect(() => {
-    const initialRoom = rooms.find((room) => room.id === urlRoomId);
-    initialRoom && setRoom(initialRoom);
-  }, [rooms, urlRoomId]);
 
   const save = async () => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
-      saveRoom({ ...room, id: roomId });
+      saveRoom(room);
       setHasChanges(false);
     }
   };
@@ -85,7 +74,7 @@ const EditRoom = ({ readyRouter }: Props) => {
 
   return (
     <>
-      <NavBar title="Edit Room" />
+      <NavBar title={title} />
       <TextField
         label="Name"
         value={room?.name}
@@ -174,4 +163,26 @@ const EditRoom = ({ readyRouter }: Props) => {
     </>
   );
 };
-export default EditRoom;
+
+const EditRoomContainer = () => {
+  const idParams = useIdParams();
+  const { roomId } = idParams ?? {};
+
+  const [initialRoom, setInitialRoom] = useState<Room | undefined>();
+
+  useRoomsQuery({
+    onSuccess: (data) => {
+      const { rooms, nextId } = data;
+      const matchingRoom = rooms.find((r) => r.id === roomId);
+      setInitialRoom(matchingRoom ?? new Room({ id: nextId }));
+    },
+  });
+
+  if (!idParams) {
+    // don't show anything until the url can be evaluated
+    return <Loading />;
+  }
+
+  return initialRoom ? <EditRoom initialRoom={initialRoom} /> : null;
+};
+export default EditRoomContainer;

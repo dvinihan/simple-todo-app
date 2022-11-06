@@ -7,13 +7,11 @@ import { useRoomsQuery } from "../hooks/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import Link from "next/link";
 import { ListItem } from "../components/ListItem";
-import { useRouter } from "next/router";
 import { useIdParams } from "../hooks/useIdParams";
 import { PageError } from "../components/PageError";
 import { Loading } from "../components/Loading";
 
 const Tasks = () => {
-  const router = useRouter();
   const idParams = useIdParams();
   const { roomId } = idParams ?? {};
 

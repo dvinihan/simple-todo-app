@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { getParamValue } from "../helpers/url";
 
 export const useIdParams = () => {
   const router = useRouter();
@@ -15,15 +16,4 @@ export const useIdParams = () => {
     roomId: roomIdParam === undefined ? undefined : Number(roomIdParam),
     taskId: taskIdParam === undefined ? undefined : Number(taskIdParam),
   };
-};
-
-const getParamValue = (param: string | string[] | undefined) => {
-  switch (typeof param) {
-    case "undefined":
-      return undefined;
-    case "object":
-      return param[0];
-    default:
-      return param;
-  }
 };

@@ -6,7 +6,6 @@ import { useSaveTask } from "../hooks/useSaveTask";
 import { useTasksQuery } from "../hooks/useTasks";
 import { NULL_TASK_ID, Room, Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
-import { getNumberUrlParam } from "../helpers/url";
 import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useRouter } from "next/router";
 import {
@@ -26,6 +25,8 @@ import {
 import { Delete } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import { NavBar } from "../components/NavBar";
+import { Loading } from "../components/Loading";
+import { useIdParams } from "../hooks/useIdParams";
 
 type TaskInputErrors = {
   name?: string;
@@ -36,6 +37,9 @@ type Props = {
 };
 
 const EditTask = ({ initialTask }: Props) => {
+  const [task, setTask] = useState(initialTask);
+  const title = task.id === NULL_TASK_ID ? "New Task" : "Edit Task";
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
@@ -51,11 +55,6 @@ const EditTask = ({ initialTask }: Props) => {
       router.back();
     },
   });
-
-  const [task, setTask] = useState(initialTask);
-
-  const isNewTask = task.id === NULL_TASK_ID;
-  const title = isNewTask ? "New Task" : "Edit Task";
 
   const [isRoomDialogVisible, setIsRoomDialogVisible] = useState(false);
   const [isFreqDialogVisible, setIsFreqDialogVisible] = useState(false);
@@ -111,7 +110,7 @@ const EditTask = ({ initialTask }: Props) => {
   };
 
   const onChangeDate = (date: Date) => {
-    setTask((t) => ({ ...t, lastDone: date }));
+    setTask((t) => ({ ...t, lastDone: date.getMilliseconds() }));
     hideDatePicker();
     setHasChanges(true);
   };
@@ -189,7 +188,7 @@ const EditTask = ({ initialTask }: Props) => {
       <Card onClick={showDatePicker}>
         <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
           <Typography fontSize={"18px"}>
-            Last completed: {task.lastDone.toDateString()}
+            Last completed: {new Date(task.lastDone).toDateString()}
           </Typography>
         </Container>
       </Card>
@@ -263,7 +262,10 @@ const EditTask = ({ initialTask }: Props) => {
       </Dialog>
 
       {isDatePickerVisible && (
-        <DatePicker selected={task.lastDone} onChange={onChangeDate} />
+        <DatePicker
+          selected={new Date(task.lastDone)}
+          onChange={onChangeDate}
+        />
       )}
 
       <Fab
@@ -316,31 +318,23 @@ const EditTask = ({ initialTask }: Props) => {
 };
 
 const EditTaskContainer = () => {
-  const router = useRouter();
-  const { tasks, nextId } = useTasksQuery({
-    onSuccess: () => {
-      handleTasksQuerySuccess();
-    },
-  });
+  const idParams = useIdParams();
+  const { taskId, roomId } = idParams ?? {};
 
   const [initialTask, setInitialTask] = useState<Task | undefined>();
 
-  const handleTasksQuerySuccess = useCallback(() => {
-    // using router.asPath (or window, of course) in the URL constructor will fail on the server: https://nextjs.org/docs/api-reference/next/router#router-object
-    try {
-      const taskId = getNumberUrlParam(
-        new URL(router.asPath, window.location.origin),
-        "taskId"
-      );
-      const roomId = getNumberUrlParam(
-        new URL(router.asPath, window.location.origin),
-        "roomId"
-      );
-      setInitialTask(
-        tasks.find((t) => t.id === taskId) ?? new Task({ roomId, id: nextId })
-      );
-    } catch {}
-  }, [nextId, router.asPath, tasks]);
+  useTasksQuery({
+    onSuccess: (data) => {
+      const { tasks, nextId } = data;
+      const matchingTask = tasks.find((t) => t.id === taskId);
+      setInitialTask(matchingTask ?? new Task({ roomId, id: nextId }));
+    },
+  });
+
+  if (!idParams) {
+    // don't show anything until the url can be evaluated
+    return <Loading />;
+  }
 
   return initialTask ? <EditTask initialTask={initialTask} /> : null;
 };

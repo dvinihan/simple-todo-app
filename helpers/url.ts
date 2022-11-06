@@ -1,4 +1,10 @@
-export const getNumberUrlParam = (url: URL, paramName: string) => {
-  const stringUrlParam = url.searchParams.get(paramName);
-  return stringUrlParam === null ? undefined : Number(stringUrlParam);
+export const getParamValue = (param: string | string[] | undefined) => {
+  switch (typeof param) {
+    case "undefined":
+      return undefined;
+    case "object":
+      return param[0];
+    default:
+      return param;
+  }
 };

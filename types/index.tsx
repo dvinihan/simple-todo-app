@@ -1,4 +1,3 @@
-import { Document } from "mongodb";
 import { Frequency } from "../constants";
 
 export const NULL_ROOM_ID = -1;
@@ -8,7 +7,7 @@ export class Room {
   id: number;
   name: string;
 
-  constructor(props?: Room) {
+  constructor(props?: Partial<Room>) {
     this.id = props?.id ?? NULL_ROOM_ID;
     this.name = props?.name ?? "";
   }
@@ -18,7 +17,8 @@ export class Task {
   id: number;
   frequencyAmount: number;
   frequencyType: Frequency;
-  lastDone: Date;
+  // i guess Dates can't be saved in react query, so i'll need to migrate to numbers
+  lastDone: Date | number;
   name: string;
   roomId: number;
 
