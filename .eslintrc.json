@@ -1,4 +1,7 @@
 {
   "extends": "next/core-web-vitals",
-  "rules": { "import/no-anonymous-default-export": "off" }
+  "rules": {
+    "import/no-anonymous-default-export": "off",
+    "react/jsx-sort-props": "warn"
+  }
 }

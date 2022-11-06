@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
 import { DiscardModalContext } from "../context/DiscardModalContext";
@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import {
   Button,
   CircularProgress,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,6 +25,7 @@ import { Delete } from "@mui/icons-material";
 import { NavBar } from "../components/NavBar";
 import { useIdParams } from "../hooks/useIdParams";
 import { Loading } from "../components/Loading";
+import { ActionButton } from "../components/ActionButton";
 
 type Props = {
   initialRoom: Room;
@@ -75,23 +77,25 @@ const EditRoom = ({ initialRoom }: Props) => {
   return (
     <>
       <NavBar title={title} />
-      <TextField
-        label="Name"
-        value={room?.name}
-        onChange={(e) => {
-          setRoom({ ...room, name: e.target.value });
-          setHasChanges(true);
-        }}
-        sx={{ marginBottom: "10px" }}
-      />
-      {errors.name && (
-        <Typography color={"red"} fontSize={"18px"}>
-          {errors.name}
-        </Typography>
-      )}
-      <Button sx={{ marginTop: "10px" }} onClick={save} variant="contained">
-        Save
-      </Button>
+      <Container>
+        <TextField
+          fullWidth
+          label="Name"
+          onChange={(e) => {
+            setRoom({ ...room, name: e.target.value });
+            setHasChanges(true);
+          }}
+          sx={{ backgroundColor: "white", marginY: "10px" }}
+          value={room?.name}
+        />
+        {errors.name && (
+          <Typography color={"red"} fontSize={"18px"}>
+            {errors.name}
+          </Typography>
+        )}
+        <ActionButton onClick={save} text="Save" />
+      </Container>
+
       <Modal open={isLoading}>
         <CircularProgress />
       </Modal>

@@ -10,6 +10,7 @@ import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useRouter } from "next/router";
 import {
   Alert,
+  Box,
   Button,
   Card,
   Container,
@@ -27,6 +28,7 @@ import DatePicker from "react-datepicker";
 import { NavBar } from "../components/NavBar";
 import { Loading } from "../components/Loading";
 import { useIdParams } from "../hooks/useIdParams";
+import { ActionButton } from "../components/ActionButton";
 
 type TaskInputErrors = {
   name?: string;
@@ -140,104 +142,103 @@ const EditTask = ({ initialTask }: Props) => {
   return (
     <>
       <NavBar title={title} />
-      <TextField
-        label="Name"
-        value={task.name}
-        onChange={(e) => {
-          setTask({ ...task, name: e.target.value });
-          setHasChanges(true);
-        }}
-        sx={{ marginBottom: "10px" }}
-      />
-      {errors.name && (
-        <Alert sx={{ color: "red", fontSize: 18 }}>{errors.name}</Alert>
-      )}
-      <Card onClick={showRoomDialog}>
-        <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
-          <Typography fontSize={"18px"}>Room: {roomName}</Typography>
-        </Container>
-      </Card>
-      <Container
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-around",
-        }}
-      >
-        <Typography>Every</Typography>
+      <Container>
         <TextField
-          value={task.frequencyAmount?.toString()}
-          type="numeric"
+          fullWidth
+          label="Name"
           onChange={(e) => {
-            const newAmount = e.target.value ? parseInt(e.target.value) : 0;
-            setTask((t) => ({ ...t, frequencyAmount: newAmount }));
+            setTask({ ...task, name: e.target.value });
             setHasChanges(true);
           }}
+          sx={{ backgroundColor: "white", marginY: "10px" }}
+          value={task.name}
         />
-        <Button
-          onClick={() => {
-            showFreqDialog();
-            setHasChanges(true);
-          }}
-          variant="outlined"
+        {errors.name && (
+          <Alert sx={{ color: "red", fontSize: 18 }}>{errors.name}</Alert>
+        )}
+        <Card
+          onClick={showRoomDialog}
+          sx={{ alignItems: "center", paddingY: "10px", marginY: "10px" }}
         >
-          {task.frequencyType}
-        </Button>
+          <Container>
+            <Typography fontSize={"18px"}>Room: {roomName}</Typography>
+          </Container>
+        </Card>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginY: "10px",
+            paddingY: "10px",
+          }}
+        >
+          <Typography>Every</Typography>
+          <TextField
+            onChange={(e) => {
+              const newAmount = e.target.value ? parseInt(e.target.value) : 0;
+              setTask((t) => ({ ...t, frequencyAmount: newAmount }));
+              setHasChanges(true);
+            }}
+            sx={{ backgroundColor: "white", marginX: "10px" }}
+            type="numeric"
+            value={task.frequencyAmount?.toString()}
+          />
+          <Button
+            onClick={() => {
+              showFreqDialog();
+              setHasChanges(true);
+            }}
+            variant="outlined"
+          >
+            {task.frequencyType}
+          </Button>
+        </Box>
+        <Card onClick={showDatePicker} sx={{ marginY: "10px" }}>
+          <Container sx={{ alignItems: "center", paddingY: "10px" }}>
+            <Typography fontSize={"18px"}>
+              Last completed: {new Date(task.lastDone).toDateString()}
+            </Typography>
+          </Container>
+        </Card>
+        <ActionButton
+          color="success"
+          onClick={completeTask}
+          text="Just did it!"
+        />
+        <ActionButton onClick={() => saveTask(task)} text="Save" />
       </Container>
-      <Card onClick={showDatePicker}>
-        <Container sx={{ alignItems: "center", paddingVertical: "10px" }}>
-          <Typography fontSize={"18px"}>
-            Last completed: {new Date(task.lastDone).toDateString()}
-          </Typography>
-        </Container>
-      </Card>
-      <Button
-        color="success"
-        onClick={completeTask}
-        sx={{ marginTop: "10px" }}
-        variant="contained"
-      >
-        Just did it!
-      </Button>
-
-      <Button
-        sx={{ marginTop: "10px" }}
-        variant="contained"
-        onClick={() => save(task)}
-      >
-        Save
-      </Button>
 
       <Dialog onClose={hideFreqDialog} open={isFreqDialogVisible}>
         <MenuItem
+          defaultChecked={task.frequencyType === Frequency.DAYS}
           key="days-radio-button"
           onClick={() => onSelectFrequency(Frequency.DAYS)}
-          defaultChecked={task.frequencyType === Frequency.DAYS}
           value={Frequency.DAYS}
         >
           {Frequency.DAYS}
         </MenuItem>
         <MenuItem
+          defaultChecked={task.frequencyType === Frequency.WEEKS}
           key="weeks-radio-button"
           onClick={() => onSelectFrequency(Frequency.WEEKS)}
-          defaultChecked={task.frequencyType === Frequency.WEEKS}
           value={Frequency.WEEKS}
         >
           {Frequency.WEEKS}
         </MenuItem>
         <MenuItem
+          defaultChecked={task.frequencyType === Frequency.MONTHS}
           key="months-radio-button"
           onClick={() => onSelectFrequency(Frequency.MONTHS)}
-          defaultChecked={task.frequencyType === Frequency.MONTHS}
           value={Frequency.MONTHS}
         >
           {Frequency.MONTHS}
         </MenuItem>
         <MenuItem
+          defaultChecked={task.frequencyType === Frequency.YEARS}
           key="years-radio-button"
           onClick={() => onSelectFrequency(Frequency.YEARS)}
-          defaultChecked={task.frequencyType === Frequency.YEARS}
           value={Frequency.YEARS}
         >
           {Frequency.YEARS}
@@ -249,9 +250,9 @@ const EditTask = ({ initialTask }: Props) => {
           {rooms.map((room) => {
             return (
               <MenuItem
+                defaultChecked={task.roomId === room.id}
                 key={room.id}
                 onClick={() => onSelectRoom(room)}
-                defaultChecked={task.roomId === room.id}
                 value={room.name}
               >
                 {room.name}
@@ -263,8 +264,8 @@ const EditTask = ({ initialTask }: Props) => {
 
       {isDatePickerVisible && (
         <DatePicker
-          selected={new Date(task.lastDone)}
           onChange={onChangeDate}
+          selected={new Date(task.lastDone)}
         />
       )}
 
@@ -272,7 +273,7 @@ const EditTask = ({ initialTask }: Props) => {
         onClick={() => {
           setShouldShowDeleteModal(true);
         }}
-        sx={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+        sx={{ position: "fixed", right: "16px", bottom: "16px" }}
       >
         <Delete />
       </Fab>
