@@ -101,10 +101,8 @@ const EditRoom = ({ initialRoom }: Props) => {
       </Modal>
 
       <Fab
-        onClick={() => {
-          setShouldShowDeleteModal(true);
-        }}
-        sx={{ position: "absolute", margin: 16, right: 0, bottom: 0 }}
+        onClick={() => setShouldShowDeleteModal(true)}
+        sx={{ position: "fixed", right: "16px", bottom: "16px" }}
       >
         <Delete />
       </Fab>
