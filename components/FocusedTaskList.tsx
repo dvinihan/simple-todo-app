@@ -53,25 +53,23 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
       {sortedTasks.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
-          <Card key={task.id} sx={{ padding: "6px", marginTop: "10px" }}>
-            <Link href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}>
-              <>
-                <Typography>
-                  <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
-                  <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
-                  <span style={{ color: "red" }}>
-                    {task.daysUntilDue === 0
-                      ? "Due today"
-                      : task.daysUntilDue > 0
-                      ? `due in ${formatDuration({ days: task.daysUntilDue })}`
-                      : `${formatDuration({
-                          days: task.daysUntilDue * -1,
-                        })} overdue`}
-                  </span>
-                </Typography>
-              </>
-            </Link>
-          </Card>
+          <Link key={task.id} href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}>
+            <Card sx={{ padding: "6px", marginTop: "10px" }}>
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
+                <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
+                <span style={{ color: "red" }}>
+                  {task.daysUntilDue === 0
+                    ? "Due today"
+                    : task.daysUntilDue > 0
+                    ? `due in ${formatDuration({ days: task.daysUntilDue })}`
+                    : `${formatDuration({
+                        days: task.daysUntilDue * -1,
+                      })} overdue`}
+                </span>
+              </Typography>
+            </Card>
+          </Link>
         );
       })}
     </Card>

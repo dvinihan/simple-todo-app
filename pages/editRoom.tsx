@@ -1,50 +1,60 @@
-import { useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
-import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveRoom } from "../hooks/useSaveRoom";
-import { NULL_ROOM_ID, Room } from "../types";
+import { Room } from "../types";
 import { useRouter } from "next/router";
 import {
-  Button,
+  Alert,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Fab,
   Modal,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { NavBar } from "../components/NavBar";
 import { useIdParams } from "../hooks/useIdParams";
 import { Loading } from "../components/Loading";
 import { ActionButton } from "../components/ActionButton";
+import { ActionModal } from "../components/ActionModal";
 
-type Props = {
-  initialRoom: Room;
-};
+const EditRoom = () => {
+  const { roomId } = useIdParams();
 
-const EditRoom = ({ initialRoom }: Props) => {
-  const [room, setRoom] = useState(initialRoom);
-  const title = room.id === NULL_ROOM_ID ? "New Room" : "Edit Room";
+  const { nextId, isLoading: isLoadingRooms } = useRoomsQuery({
+    onSuccess: (data) => {
+      const { rooms, nextId } = data;
+      const matchingRoom = rooms.find((r) => r.id === roomId);
+      setRoom(matchingRoom ?? new Room({ id: nextId }));
+    },
+  });
+
+  const [room, setRoom] = useState(new Room());
+  const title = room.id === nextId ? "New Room" : "Edit Room";
 
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [errors, setErrors] = useState<{ name?: string }>({});
+
+  const [hasChanges, setHasChanges] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
+  const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
 
-  const { discardModalState, setDiscardModalState } =
-    useContext(DiscardModalContext) ?? {};
+  useEffect(() => {
+    router.beforePopState(() => {
+      if (hasChanges) {
+        setShouldShowDiscardModal(true);
+        return false;
+      }
+      return true;
+    });
+  }, [hasChanges, router]);
 
-  const { mutate: saveRoom, isLoading } = useSaveRoom({
+  const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
       router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
@@ -57,10 +67,6 @@ const EditRoom = ({ initialRoom }: Props) => {
     },
   });
 
-  const setHasChanges = (hasChanges: boolean) => {
-    setDiscardModalState?.({ show: false, action: () => {}, hasChanges });
-  };
-
   const save = async () => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
@@ -70,9 +76,9 @@ const EditRoom = ({ initialRoom }: Props) => {
     }
   };
 
-  const deleteRoom = () => {
-    doDelete(room.id);
-  };
+  if (isLoadingRooms) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -89,14 +95,14 @@ const EditRoom = ({ initialRoom }: Props) => {
           value={room?.name}
         />
         {errors.name && (
-          <Typography color={"red"} fontSize={"18px"}>
+          <Alert severity="error" sx={{ fontSize: "18px" }}>
             {errors.name}
-          </Typography>
+          </Alert>
         )}
         <ActionButton onClick={save} text="Save" />
       </Container>
 
-      <Modal open={isLoading}>
+      <Modal open={isLoadingSaveRoom}>
         <CircularProgress />
       </Modal>
 
@@ -106,85 +112,21 @@ const EditRoom = ({ initialRoom }: Props) => {
       >
         <Delete />
       </Fab>
-      <Dialog
-        onClose={() => setShouldShowDeleteModal(false)}
-        open={shouldShowDeleteModal}
-      >
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete this room?
-          </DialogContentText>
-          <DialogActions>
-            <Button onClick={deleteRoom}>Yes</Button>
-            <Button onClick={() => setShouldShowDeleteModal(false)}>No</Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
 
-      <Dialog
-        onClose={() =>
-          setDiscardModalState?.({
-            show: false,
-            action: () => {},
-            hasChanges: true,
-          })
-        }
-        open={Boolean(discardModalState?.show)}
-      >
-        <DialogContent>
-          <DialogTitle>Save changes?</DialogTitle>
-          <DialogActions>
-            <Button
-              onClick={() => {
-                setDiscardModalState?.({
-                  show: false,
-                  action: () => {},
-                  hasChanges: false,
-                });
-                discardModalState?.action();
-              }}
-            >
-              No
-            </Button>
-            <Button
-              onClick={() => {
-                save();
-                setDiscardModalState?.({
-                  show: false,
-                  action: () => {},
-                  hasChanges: false,
-                });
-                discardModalState?.action();
-              }}
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
+      <ActionModal
+        onConfirm={() => doDelete(room.id)}
+        onDeny={() => setShouldShowDeleteModal(false)}
+        open={shouldShowDeleteModal}
+        title="Are you sure you want to delete this room?"
+      />
+
+      <ActionModal
+        onConfirm={save}
+        onDeny={() => setShouldShowDiscardModal(false)}
+        open={shouldShowDiscardModal}
+        title="Save changes?"
+      />
     </>
   );
 };
-
-const EditRoomContainer = () => {
-  const idParams = useIdParams();
-  const { roomId } = idParams ?? {};
-
-  const [initialRoom, setInitialRoom] = useState<Room | undefined>();
-
-  useRoomsQuery({
-    onSuccess: (data) => {
-      const { rooms, nextId } = data;
-      const matchingRoom = rooms.find((r) => r.id === roomId);
-      setInitialRoom(matchingRoom ?? new Room({ id: nextId }));
-    },
-  });
-
-  if (!idParams) {
-    // don't show anything until the url can be evaluated
-    return <Loading />;
-  }
-
-  return initialRoom ? <EditRoom initialRoom={initialRoom} /> : null;
-};
-export default EditRoomContainer;
+export default EditRoom;

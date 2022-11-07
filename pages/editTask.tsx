@@ -1,12 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
 import { Frequency, HOME_ROUTE, TASKS_QUERY_KEY } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
 import { useTasksQuery } from "../hooks/useTasks";
-import { NULL_TASK_ID, Room, Task } from "../types";
+import { Room, Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
-import { DiscardModalContext } from "../context/DiscardModalContext";
 import { useRouter } from "next/router";
 import {
   Alert,
@@ -15,9 +14,7 @@ import {
   Card,
   Container,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
   Fab,
   MenuItem,
   TextField,
@@ -29,18 +26,22 @@ import { NavBar } from "../components/NavBar";
 import { Loading } from "../components/Loading";
 import { useIdParams } from "../hooks/useIdParams";
 import { ActionButton } from "../components/ActionButton";
+import { ActionModal } from "../components/ActionModal";
+import { PickerModal } from "../components/PickerModal";
 
-type TaskInputErrors = {
-  name?: string;
-};
+const EditTask = () => {
+  const { taskId, roomId } = useIdParams();
 
-type Props = {
-  initialTask: Task;
-};
+  const { nextId, isLoading } = useTasksQuery({
+    onSuccess: (data) => {
+      const { tasks, nextId } = data;
+      const matchingTask = tasks.find((t) => t.id === taskId);
+      setTask(matchingTask ?? new Task({ roomId, id: nextId }));
+    },
+  });
 
-const EditTask = ({ initialTask }: Props) => {
-  const [task, setTask] = useState(initialTask);
-  const title = task.id === NULL_TASK_ID ? "New Task" : "Edit Task";
+  const [task, setTask] = useState(new Task());
+  const title = task.id === nextId ? "New Task" : "Edit Task";
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -62,63 +63,42 @@ const EditTask = ({ initialTask }: Props) => {
   const [isFreqDialogVisible, setIsFreqDialogVisible] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
+
   const [hasChanges, setHasChanges] = useState(false);
+  const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
 
-  const { discardModalState, setDiscardModalState } =
-    useContext(DiscardModalContext) ?? {};
-
-  const [errors, setErrors] = useState<TaskInputErrors>({});
-
-  const showAlert = useCallback(
-    (e: Event) => {
-      console.log("vinihan - hasChanges");
-      if (hasChanges) {
-        e.preventDefault();
-
-        setDiscardModalState?.({
-          show: true,
-          action: () => {},
-          hasChanges: true,
-        });
-      }
-    },
-    [hasChanges, setDiscardModalState]
-  );
+  const [errors, setErrors] = useState<{
+    name?: string;
+  }>({});
 
   useEffect(() => {
-    window.addEventListener("beforeunload", showAlert);
+    router.beforePopState(() => {
+      if (hasChanges) {
+        setShouldShowDiscardModal(true);
+        return false;
+      }
+      return true;
+    });
+  }, [hasChanges, router]);
 
-    return () => {
-      window.removeEventListener("beforeunload", showAlert);
-    };
-  }, [showAlert]);
-
-  const showRoomDialog = () => setIsRoomDialogVisible(true);
-  const hideRoomDialog = () => setIsRoomDialogVisible(false);
-  const showFreqDialog = () => setIsFreqDialogVisible(true);
-  const hideFreqDialog = () => setIsFreqDialogVisible(false);
-  const showDatePicker = () => setIsDatePickerVisible(true);
-  const hideDatePicker = () => setIsDatePickerVisible(false);
-
-  const onSelectRoom = (room: Room) => {
-    setTask((t) => ({ ...t, roomId: room.id }));
-    hideRoomDialog();
-    setHasChanges(true);
+  const onSelectRoom = (roomName: string) => {
+    const room = rooms.find((r) => r.name === roomName);
+    if (room) {
+      setTask((t) => ({ ...t, roomId: room.id }));
+      setHasChanges(true);
+    }
+    setIsRoomDialogVisible(false);
   };
 
   const onSelectFrequency = (frequency: Frequency) => {
     setTask((t) => ({ ...t, frequencyType: frequency }));
-    hideFreqDialog();
+    setIsFreqDialogVisible(false);
   };
 
   const onChangeDate = (date: Date) => {
     setTask((t) => ({ ...t, lastDone: date.getMilliseconds() }));
-    hideDatePicker();
+    setIsDatePickerVisible(false);
     setHasChanges(true);
-  };
-
-  const completeTask = () => {
-    save({ ...task, lastDone: new Date() });
   };
 
   const save = (taskToSave: Task) => {
@@ -130,14 +110,14 @@ const EditTask = ({ initialTask }: Props) => {
     }
   };
 
-  const deleteTask = () => {
-    doDelete(task.id);
-  };
-
   const roomName = useMemo(
     () => rooms.find((room) => room.id === task.roomId)?.name ?? "",
     [rooms, task.roomId]
   );
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -154,10 +134,12 @@ const EditTask = ({ initialTask }: Props) => {
           value={task.name}
         />
         {errors.name && (
-          <Alert sx={{ color: "red", fontSize: 18 }}>{errors.name}</Alert>
+          <Alert severity="error" sx={{ fontSize: 18 }}>
+            {errors.name}
+          </Alert>
         )}
         <Card
-          onClick={showRoomDialog}
+          onClick={() => setIsRoomDialogVisible(true)}
           sx={{ alignItems: "center", paddingY: "10px", marginY: "10px" }}
         >
           <Container>
@@ -187,7 +169,7 @@ const EditTask = ({ initialTask }: Props) => {
           />
           <Button
             onClick={() => {
-              showFreqDialog();
+              setIsFreqDialogVisible(true);
               setHasChanges(true);
             }}
             variant="outlined"
@@ -195,7 +177,10 @@ const EditTask = ({ initialTask }: Props) => {
             {task.frequencyType}
           </Button>
         </Box>
-        <Card onClick={showDatePicker} sx={{ marginY: "10px" }}>
+        <Card
+          onClick={() => setIsDatePickerVisible(true)}
+          sx={{ marginY: "10px" }}
+        >
           <Container sx={{ alignItems: "center", paddingY: "10px" }}>
             <Typography fontSize={"18px"}>
               Last completed: {new Date(task.lastDone).toDateString()}
@@ -204,63 +189,30 @@ const EditTask = ({ initialTask }: Props) => {
         </Card>
         <ActionButton
           color="success"
-          onClick={completeTask}
+          onClick={() => save({ ...task, lastDone: new Date() })}
           text="Just did it!"
         />
-        <ActionButton onClick={() => saveTask(task)} text="Save" />
+        <ActionButton onClick={() => save(task)} text="Save" />
       </Container>
 
-      <Dialog onClose={hideFreqDialog} open={isFreqDialogVisible}>
-        <MenuItem
-          defaultChecked={task.frequencyType === Frequency.DAYS}
-          key="days-radio-button"
-          onClick={() => onSelectFrequency(Frequency.DAYS)}
-          value={Frequency.DAYS}
-        >
-          {Frequency.DAYS}
-        </MenuItem>
-        <MenuItem
-          defaultChecked={task.frequencyType === Frequency.WEEKS}
-          key="weeks-radio-button"
-          onClick={() => onSelectFrequency(Frequency.WEEKS)}
-          value={Frequency.WEEKS}
-        >
-          {Frequency.WEEKS}
-        </MenuItem>
-        <MenuItem
-          defaultChecked={task.frequencyType === Frequency.MONTHS}
-          key="months-radio-button"
-          onClick={() => onSelectFrequency(Frequency.MONTHS)}
-          value={Frequency.MONTHS}
-        >
-          {Frequency.MONTHS}
-        </MenuItem>
-        <MenuItem
-          defaultChecked={task.frequencyType === Frequency.YEARS}
-          key="years-radio-button"
-          onClick={() => onSelectFrequency(Frequency.YEARS)}
-          value={Frequency.YEARS}
-        >
-          {Frequency.YEARS}
-        </MenuItem>
-      </Dialog>
+      <PickerModal
+        onClose={() => setIsFreqDialogVisible(false)}
+        onSelect={(value) => onSelectFrequency(value as Frequency)}
+        open={isFreqDialogVisible}
+        options={[
+          Frequency.DAYS,
+          Frequency.WEEKS,
+          Frequency.MONTHS,
+          Frequency.YEARS,
+        ]}
+      />
 
-      <Dialog onClose={hideRoomDialog} open={isRoomDialogVisible}>
-        <DialogContent>
-          {rooms.map((room) => {
-            return (
-              <MenuItem
-                defaultChecked={task.roomId === room.id}
-                key={room.id}
-                onClick={() => onSelectRoom(room)}
-                value={room.name}
-              >
-                {room.name}
-              </MenuItem>
-            );
-          })}
-        </DialogContent>
-      </Dialog>
+      <PickerModal
+        onClose={() => setIsRoomDialogVisible(false)}
+        onSelect={onSelectRoom}
+        open={isRoomDialogVisible}
+        options={rooms.map((r) => r.name)}
+      />
 
       {isDatePickerVisible && (
         <DatePicker
@@ -270,74 +222,26 @@ const EditTask = ({ initialTask }: Props) => {
       )}
 
       <Fab
-        onClick={() => {
-          setShouldShowDeleteModal(true);
-        }}
+        onClick={() => setShouldShowDeleteModal(true)}
         sx={{ position: "fixed", right: "16px", bottom: "16px" }}
       >
         <Delete />
       </Fab>
-      <Dialog
-        onClose={() => setShouldShowDeleteModal(false)}
-        open={shouldShowDeleteModal}
-      >
-        <DialogContent>
-          <DialogTitle>Are you sure you want to delete this task?</DialogTitle>
-          <DialogActions>
-            <Button onClick={deleteTask}>Yes</Button>
-            <Button onClick={() => setShouldShowDeleteModal(false)}>No</Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
 
-      <Dialog
-        onClose={() =>
-          setDiscardModalState?.({
-            show: false,
-            action: () => {},
-            hasChanges: true,
-          })
-        }
-        open={Boolean(discardModalState?.show)}
-      >
-        <DialogContent>
-          <DialogTitle>Save changes?</DialogTitle>
-          <DialogActions>
-            <Button>No</Button>
-            <Button
-              onClick={() => {
-                save(task);
-              }}
-            >
-              Yes
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
+      <ActionModal
+        onConfirm={() => doDelete(task.id)}
+        onDeny={() => setShouldShowDeleteModal(false)}
+        open={shouldShowDeleteModal}
+        title="Are you sure you want to delete this task?"
+      />
+
+      <ActionModal
+        onConfirm={() => save(task)}
+        onDeny={() => setShouldShowDiscardModal(false)}
+        open={shouldShowDiscardModal}
+        title="Save changes?"
+      />
     </>
   );
 };
-
-const EditTaskContainer = () => {
-  const idParams = useIdParams();
-  const { taskId, roomId } = idParams ?? {};
-
-  const [initialTask, setInitialTask] = useState<Task | undefined>();
-
-  useTasksQuery({
-    onSuccess: (data) => {
-      const { tasks, nextId } = data;
-      const matchingTask = tasks.find((t) => t.id === taskId);
-      setInitialTask(matchingTask ?? new Task({ roomId, id: nextId }));
-    },
-  });
-
-  if (!idParams) {
-    // don't show anything until the url can be evaluated
-    return <Loading />;
-  }
-
-  return initialTask ? <EditTask initialTask={initialTask} /> : null;
-};
-
-export default EditTaskContainer;
+export default EditTask;
