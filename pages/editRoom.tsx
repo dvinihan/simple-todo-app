@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
@@ -15,11 +15,11 @@ import {
   TextField,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-import { NavBar } from "../components/NavBar";
 import { useIdParams } from "../hooks/useIdParams";
 import { Loading } from "../components/Loading";
 import { ActionButton } from "../components/ActionButton";
 import { ActionModal } from "../components/ActionModal";
+import { AppContext } from "./_app";
 
 const EditRoom = () => {
   const { roomId } = useIdParams();
@@ -33,7 +33,6 @@ const EditRoom = () => {
   });
 
   const [room, setRoom] = useState(new Room());
-  const title = room.id === nextId ? "New Room" : "Edit Room";
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -43,6 +42,12 @@ const EditRoom = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
   const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
+
+  const { setPageTitle } = useContext(AppContext) ?? {};
+  useEffect(() => {
+    const title = room.id === nextId ? "New Room" : "Edit Room";
+    setPageTitle?.(title);
+  }, [nextId, room.id, setPageTitle]);
 
   useEffect(() => {
     router.beforePopState(() => {
@@ -82,7 +87,6 @@ const EditRoom = () => {
 
   return (
     <>
-      <NavBar title={title} />
       <Container>
         <TextField
           fullWidth

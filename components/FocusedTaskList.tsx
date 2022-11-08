@@ -1,11 +1,13 @@
 import { Card, Typography } from "@mui/material";
 import { formatDuration } from "date-fns";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useRouter } from "next/router";
+import { useContext, useMemo } from "react";
 import { EDIT_TASK_ROUTE } from "../constants";
 import { getDaysUntilDue, getFrequencyInDays } from "../helpers/tasks";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useTasksQuery } from "../hooks/useTasks";
+import { AppContext } from "../pages/_app";
 import { TaskWithDaysUntilDue } from "../types";
 
 type Props = {
@@ -14,8 +16,10 @@ type Props = {
 };
 
 export const FocusedTaskList = ({ type, roomId }: Props) => {
+  const router = useRouter();
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
+  const { setBackButtonHref } = useContext(AppContext) ?? {};
 
   const tasksWithDaysUntilDue: TaskWithDaysUntilDue[] = tasks
     .filter((t) => (roomId === undefined ? true : t.roomId === roomId))
@@ -53,8 +57,11 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
       {sortedTasks.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
-          <Link key={task.id} href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}>
-            <Card sx={{ padding: "6px", marginTop: "10px" }}>
+          <Link href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`} key={task.id}>
+            <Card
+              onClick={() => setBackButtonHref?.(router.asPath)}
+              sx={{ padding: "6px", marginTop: "10px" }}
+            >
               <Typography>
                 <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
                 <span style={{ fontWeight: "bold" }}>{room?.name}, </span>

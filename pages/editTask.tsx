@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
 import { Frequency, HOME_ROUTE, TASKS_QUERY_KEY } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
 import { useTasksQuery } from "../hooks/useTasks";
-import { Room, Task } from "../types";
+import { Task } from "../types";
 import { useDeleteTask } from "../hooks/useDeleteTask";
 import { useRouter } from "next/router";
 import {
@@ -13,10 +13,7 @@ import {
   Button,
   Card,
   Container,
-  Dialog,
-  DialogContent,
   Fab,
-  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
@@ -28,6 +25,9 @@ import { useIdParams } from "../hooks/useIdParams";
 import { ActionButton } from "../components/ActionButton";
 import { ActionModal } from "../components/ActionModal";
 import { PickerModal } from "../components/PickerModal";
+
+import "react-datepicker/dist/react-datepicker.css";
+import { AppContext } from "./_app";
 
 const EditTask = () => {
   const { taskId, roomId } = useIdParams();
@@ -41,7 +41,6 @@ const EditTask = () => {
   });
 
   const [task, setTask] = useState(new Task());
-  const title = task.id === nextId ? "New Task" : "Edit Task";
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -61,7 +60,6 @@ const EditTask = () => {
 
   const [isRoomDialogVisible, setIsRoomDialogVisible] = useState(false);
   const [isFreqDialogVisible, setIsFreqDialogVisible] = useState(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
   const [hasChanges, setHasChanges] = useState(false);
@@ -70,6 +68,12 @@ const EditTask = () => {
   const [errors, setErrors] = useState<{
     name?: string;
   }>({});
+
+  const { setPageTitle } = useContext(AppContext) ?? {};
+  useEffect(() => {
+    const title = task.id === nextId ? "New Task" : "Edit Task";
+    setPageTitle?.(title);
+  }, [nextId, setPageTitle, task.id]);
 
   useEffect(() => {
     router.beforePopState(() => {
@@ -97,7 +101,6 @@ const EditTask = () => {
 
   const onChangeDate = (date: Date) => {
     setTask((t) => ({ ...t, lastDone: date.getMilliseconds() }));
-    setIsDatePickerVisible(false);
     setHasChanges(true);
   };
 
@@ -121,7 +124,6 @@ const EditTask = () => {
 
   return (
     <>
-      <NavBar title={title} />
       <Container>
         <TextField
           fullWidth
@@ -177,16 +179,14 @@ const EditTask = () => {
             {task.frequencyType}
           </Button>
         </Box>
-        <Card
-          onClick={() => setIsDatePickerVisible(true)}
-          sx={{ marginY: "10px" }}
-        >
-          <Container sx={{ alignItems: "center", paddingY: "10px" }}>
-            <Typography fontSize={"18px"}>
-              Last completed: {new Date(task.lastDone).toDateString()}
-            </Typography>
-          </Container>
-        </Card>
+
+        <Typography fontSize="18px">Last completed:</Typography>
+        <DatePicker
+          className="date-picker"
+          onChange={onChangeDate}
+          selected={new Date(task.lastDone)}
+        />
+
         <ActionButton
           color="success"
           onClick={() => save({ ...task, lastDone: new Date() })}
@@ -213,13 +213,6 @@ const EditTask = () => {
         open={isRoomDialogVisible}
         options={rooms.map((r) => r.name)}
       />
-
-      {isDatePickerVisible && (
-        <DatePicker
-          onChange={onChangeDate}
-          selected={new Date(task.lastDone)}
-        />
-      )}
 
       <Fab
         onClick={() => setShouldShowDeleteModal(true)}

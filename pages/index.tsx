@@ -1,15 +1,23 @@
 import { Add } from "@mui/icons-material";
-import { Box, Fab, Typography } from "@mui/material";
+import { Box, Fab } from "@mui/material";
 import { EDIT_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
-import { NavBar } from "../components/NavBar";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import { ListItem } from "../components/ListItem";
 import Link from "next/link";
 import { Loading } from "../components/Loading";
+import { useRouter } from "next/router";
+import { useContext, useEffect } from "react";
+import { AppContext } from "./_app";
 
 const Home = () => {
+  const router = useRouter();
   const { rooms, isLoading } = useRoomsQuery();
+  const { setBackButtonHref, setPageTitle } = useContext(AppContext) ?? {};
+
+  useEffect(() => {
+    setPageTitle?.("Rooms");
+  }, [setPageTitle]);
 
   if (isLoading) {
     return <Loading />;
@@ -17,14 +25,14 @@ const Home = () => {
 
   return (
     <>
-      <NavBar title="Rooms" />
       <Box>
         <FocusedTaskList type="overdue" />
         <FocusedTaskList type="upcoming" />
         {rooms.map((room) => (
           <ListItem
-            key={room.id}
             href={`${TASKS_ROUTE}?roomId=${room.id}`}
+            key={room.id}
+            onClick={() => setBackButtonHref?.(router.asPath)}
             text={room.name}
           />
         ))}
@@ -37,7 +45,7 @@ const Home = () => {
         }}
       >
         <Link href={`${EDIT_ROOM_ROUTE}`}>
-          <Add />
+          <Add onClick={() => setBackButtonHref?.(router.asPath)} />
         </Link>
       </Fab>
     </>

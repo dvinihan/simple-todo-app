@@ -3,10 +3,11 @@ import Link from "next/link";
 
 type Props = {
   href: string;
+  onClick: () => void;
   text: string;
 };
 
-export const ListItem = ({ href, text }: Props) => {
+export const ListItem = ({ href, onClick, text }: Props) => {
   return (
     <Card
       sx={{
@@ -16,7 +17,9 @@ export const ListItem = ({ href, text }: Props) => {
       variant="outlined"
     >
       <Link href={href}>
-        <Typography fontSize={"24px"}>{text}</Typography>
+        <Typography fontSize={"24px"} onClick={onClick}>
+          {text}
+        </Typography>
       </Link>
     </Card>
   );
