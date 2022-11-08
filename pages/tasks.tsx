@@ -17,7 +17,7 @@ const Tasks = () => {
   const router = useRouter();
   const idParams = useIdParams();
   const { roomId } = idParams ?? {};
-  const { setBackButtonHref, setPageTitle } = useContext(AppContext) ?? {};
+  const { addHrefToStack, setPageTitle } = useContext(AppContext) ?? {};
 
   const { tasks } = useTasksQuery();
   const { rooms } = useRoomsQuery();
@@ -51,19 +51,19 @@ const Tasks = () => {
           <ListItem
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}
             key={task.id}
-            onClick={() => setBackButtonHref?.(router.asPath)}
+            onClick={() => addHrefToStack?.(router.asPath)}
             text={task.name}
           />
         ))}
       </Box>
       <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
         <Link href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}`}>
-          <Edit onClick={() => setBackButtonHref?.(router.asPath)} />
+          <Edit onClick={() => addHrefToStack?.(router.asPath)} />
         </Link>
       </Fab>
       <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
         <Link href={`${EDIT_TASK_ROUTE}?roomId=${roomId}`}>
-          <Add onClick={() => setBackButtonHref?.(router.asPath)} />
+          <Add onClick={() => addHrefToStack?.(router.asPath)} />
         </Link>
       </Fab>
     </>

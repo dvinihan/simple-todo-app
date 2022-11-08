@@ -16,7 +16,7 @@ export const NavBar = () => {
       <AppBar>
         <Toolbar>
           {hrefStack.length > 0 && (
-            <Link href={hrefStack[-1]}>
+            <Link href={hrefStack[hrefStack.length - 1]}>
               <ArrowBack
                 fontSize="large"
                 onClick={() => removeLastHrefFromStack?.()}

@@ -19,7 +19,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
   const router = useRouter();
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
-  const { setBackButtonHref } = useContext(AppContext) ?? {};
+  const { addHrefToStack } = useContext(AppContext) ?? {};
 
   const tasksWithDaysUntilDue: TaskWithDaysUntilDue[] = tasks
     .filter((t) => (roomId === undefined ? true : t.roomId === roomId))
@@ -59,7 +59,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
         return (
           <Link href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`} key={task.id}>
             <Card
-              onClick={() => setBackButtonHref?.(router.asPath)}
+              onClick={() => addHrefToStack?.(router.asPath)}
               sx={{ padding: "6px", marginTop: "10px" }}
             >
               <Typography>

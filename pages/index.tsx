@@ -13,7 +13,7 @@ import { AppContext } from "./_app";
 const Home = () => {
   const router = useRouter();
   const { rooms, isLoading } = useRoomsQuery();
-  const { setBackButtonHref, setPageTitle } = useContext(AppContext) ?? {};
+  const { addHrefToStack, setPageTitle } = useContext(AppContext) ?? {};
 
   useEffect(() => {
     setPageTitle?.("Rooms");
@@ -32,7 +32,7 @@ const Home = () => {
           <ListItem
             href={`${TASKS_ROUTE}?roomId=${room.id}`}
             key={room.id}
-            onClick={() => setBackButtonHref?.(router.asPath)}
+            onClick={() => addHrefToStack?.(router.asPath)}
             text={room.name}
           />
         ))}
@@ -45,7 +45,7 @@ const Home = () => {
         }}
       >
         <Link href={`${EDIT_ROOM_ROUTE}`}>
-          <Add onClick={() => setBackButtonHref?.(router.asPath)} />
+          <Add onClick={() => addHrefToStack?.(router.asPath)} />
         </Link>
       </Fab>
     </>
