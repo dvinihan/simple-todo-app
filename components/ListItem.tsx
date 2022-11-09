@@ -3,7 +3,7 @@ import Link from "next/link";
 
 type Props = {
   href: string;
-  onClick: () => void;
+  onClick?: () => void;
   text: string;
 };
 

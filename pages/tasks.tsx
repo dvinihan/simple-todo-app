@@ -8,16 +8,12 @@ import Link from "next/link";
 import { ListItem } from "../components/ListItem";
 import { useIdParams } from "../hooks/useIdParams";
 import { PageError } from "../components/PageError";
-import { Loading } from "../components/Loading";
+import { LoadingPage } from "../components/LoadingPage";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
-import { AppContext } from "./_app";
 
 const Tasks = () => {
   const router = useRouter();
-  const idParams = useIdParams();
-  const { roomId } = idParams ?? {};
-  const { addHrefToStack, setPageTitle } = useContext(AppContext) ?? {};
+  const { roomId } = useIdParams();
 
   const { tasks } = useTasksQuery();
   const { rooms } = useRoomsQuery();
@@ -25,13 +21,8 @@ const Tasks = () => {
   const tasksInRoom = tasks.filter((task) => task.roomId === roomId);
   const roomName = rooms.find((room) => room.id === roomId)?.name;
 
-  useEffect(() => {
-    setPageTitle?.(roomName ?? "");
-  }, [roomName, setPageTitle]);
-
-  if (!idParams) {
-    // don't show anything until the url can be evaluated
-    return <Loading />;
+  if (!router.isReady) {
+    return <LoadingPage />;
   }
 
   if (roomId === undefined) {
@@ -51,19 +42,18 @@ const Tasks = () => {
           <ListItem
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}
             key={task.id}
-            onClick={() => addHrefToStack?.(router.asPath)}
             text={task.name}
           />
         ))}
       </Box>
       <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
         <Link href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}`}>
-          <Edit onClick={() => addHrefToStack?.(router.asPath)} />
+          <Edit />
         </Link>
       </Fab>
       <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
         <Link href={`${EDIT_TASK_ROUTE}?roomId=${roomId}`}>
-          <Add onClick={() => addHrefToStack?.(router.asPath)} />
+          <Add />
         </Link>
       </Fab>
     </>

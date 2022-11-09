@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
 import { useDeleteRoom } from "../hooks/useDeleteRoom";
@@ -16,10 +16,9 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { useIdParams } from "../hooks/useIdParams";
-import { Loading } from "../components/Loading";
+import { LoadingPage } from "../components/LoadingPage";
 import { ActionButton } from "../components/ActionButton";
 import { ActionModal } from "../components/ActionModal";
-import { AppContext } from "./_app";
 
 const EditRoom = () => {
   const { roomId } = useIdParams();
@@ -42,12 +41,6 @@ const EditRoom = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
   const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
-
-  const { setPageTitle } = useContext(AppContext) ?? {};
-  useEffect(() => {
-    const title = room.id === nextId ? "New Room" : "Edit Room";
-    setPageTitle?.(title);
-  }, [nextId, room.id, setPageTitle]);
 
   useEffect(() => {
     router.beforePopState(() => {
@@ -82,7 +75,7 @@ const EditRoom = () => {
   };
 
   if (isLoadingRooms) {
-    return <Loading />;
+    return <LoadingPage />;
   }
 
   return (

@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
 
-export const Loading = () => {
+export const LoadingPage = () => {
   return <Typography>Loading...</Typography>;
 };

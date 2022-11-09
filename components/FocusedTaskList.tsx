@@ -1,13 +1,11 @@
 import { Card, Typography } from "@mui/material";
 import { formatDuration } from "date-fns";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { EDIT_TASK_ROUTE } from "../constants";
 import { getDaysUntilDue, getFrequencyInDays } from "../helpers/tasks";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useTasksQuery } from "../hooks/useTasks";
-import { AppContext } from "../pages/_app";
 import { TaskWithDaysUntilDue } from "../types";
 
 type Props = {
@@ -16,10 +14,8 @@ type Props = {
 };
 
 export const FocusedTaskList = ({ type, roomId }: Props) => {
-  const router = useRouter();
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
-  const { addHrefToStack } = useContext(AppContext) ?? {};
 
   const tasksWithDaysUntilDue: TaskWithDaysUntilDue[] = tasks
     .filter((t) => (roomId === undefined ? true : t.roomId === roomId))
@@ -58,10 +54,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
           <Link href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`} key={task.id}>
-            <Card
-              onClick={() => addHrefToStack?.(router.asPath)}
-              sx={{ padding: "6px", marginTop: "10px" }}
-            >
+            <Card sx={{ padding: "6px", marginTop: "10px" }}>
               <Typography>
                 <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
                 <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
