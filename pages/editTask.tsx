@@ -1,15 +1,17 @@
 import { useTasksQuery } from "../hooks/useTasks";
 import { Task } from "../types";
 import { LoadingPage } from "../components/LoadingPage";
-import { useIdParams } from "../hooks/useIdParams";
+import { useIdParams, useOriginParam } from "../hooks/url";
 import EditTaskForm from "../components/EditTaskForm";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
+import { NavBar } from "../components/NavBar";
 
 const EditTask = () => {
   const router = useRouter();
   const { taskId } = useIdParams();
+  const pageOrigin = useOriginParam();
 
   const [task, setTask] = useState<Task | undefined>();
 
@@ -33,6 +35,11 @@ const EditTask = () => {
     return <ErrorPage message={`No task found with ID ${taskId}`} />;
   }
 
-  return <EditTaskForm initialTask={task} />;
+  return (
+    <>
+      <NavBar backUrl={pageOrigin} title="Edit Task" />
+      <EditTaskForm initialTask={task} pageOrigin={pageOrigin} />
+    </>
+  );
 };
 export default EditTask;

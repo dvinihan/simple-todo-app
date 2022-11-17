@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import { createContext } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { NavBar } from "../components/NavBar";
+import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/globals.css";
 
 type AppContextState = {};
@@ -16,9 +16,9 @@ export default function MyApp({
   return (
     <QueryClientProvider client={queryClient}>
       <AppContext.Provider value={{}}>
-        <NavBar />
         <Component {...pageProps} />
       </AppContext.Provider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }

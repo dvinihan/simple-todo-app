@@ -53,7 +53,10 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
       {sortedTasks.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
-          <Link href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`} key={task.id}>
+          <Link
+            href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
+            key={task.id}
+          >
             <Card sx={{ padding: "6px", marginTop: "10px" }}>
               <Typography>
                 <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}

@@ -1,29 +1,32 @@
 import { useQuery, UseQueryOptions } from "react-query";
 import { Task } from "../types";
 import { TASKS_QUERY_KEY } from "../constants";
-import { TasksApiResponse } from "../pages/api/tasks";
+
+type TasksResponse = {
+  tasks: Task[];
+  nextId: number;
+};
 
 export const useTasksQuery = (
   options?: UseQueryOptions<
-    TasksApiResponse,
+    TasksResponse,
     Error,
-    TasksApiResponse,
+    TasksResponse,
     typeof TASKS_QUERY_KEY
   >
 ) => {
-  const tasksQuery = useQuery(TASKS_QUERY_KEY, getTasks, options);
-
-  const { data } = tasksQuery;
-  const sanitizedTasks = sanitizeTasksData(data?.tasks);
-
+  const queryResult = useQuery(TASKS_QUERY_KEY, getTasks, options);
   return {
-    ...tasksQuery,
-    tasks: sanitizedTasks,
-    nextId: data?.nextId,
+    ...queryResult,
+    tasks: queryResult.data?.tasks ?? [],
+    nextId: queryResult.data?.nextId,
   };
 };
 
-export const getTasks = () => fetch("/api/tasks").then((res) => res.json());
+export const getTasks = (): Promise<TasksResponse> =>
+  fetch("/api/tasks")
+    .then((res) => res.json())
+    .then((data) => ({ ...data, tasks: sanitizeTasksData(data.tasks) }));
 
 const sanitizeTasksData = (data: unknown) => {
   if (!Array.isArray(data)) {

@@ -6,6 +6,7 @@ import { FocusedTaskList } from "../components/FocusedTaskList";
 import { ListItem } from "../components/ListItem";
 import Link from "next/link";
 import { LoadingPage } from "../components/LoadingPage";
+import { NavBar } from "../components/NavBar";
 
 const Home = () => {
   const { rooms, isLoading } = useRoomsQuery();
@@ -16,6 +17,7 @@ const Home = () => {
 
   return (
     <>
+      <NavBar title="Rooms" />
       <Box>
         <FocusedTaskList type="overdue" />
         <FocusedTaskList type="upcoming" />
@@ -34,7 +36,7 @@ const Home = () => {
           right: "16px",
         }}
       >
-        <Link href={`${NEW_ROOM_ROUTE}`}>
+        <Link href={`${NEW_ROOM_ROUTE}?origin=${window.location.href}`}>
           <Add />
         </Link>
       </Fab>

@@ -1,10 +1,9 @@
-import { WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Room } from "../../types";
 import clientPromise from "../../util/mongodb";
 
-export type RoomsApiResponse = {
-  rooms: WithId<Room>[];
+type RoomsApiResponse = {
+  rooms: Room[];
   nextId: number;
 };
 

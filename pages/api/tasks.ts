@@ -1,10 +1,9 @@
-import { WithId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Task } from "../../types";
 import clientPromise from "../../util/mongodb";
 
 export type TasksApiResponse = {
-  tasks: WithId<Task>[];
+  tasks: Task[];
   nextId: number;
 };
 

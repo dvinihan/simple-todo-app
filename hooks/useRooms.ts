@@ -1,29 +1,32 @@
 import { useQuery, UseQueryOptions } from "react-query";
 import { Room } from "../types";
 import { ROOMS_QUERY_KEY } from "../constants";
-import { RoomsApiResponse } from "../pages/api/rooms";
+
+type RoomsResponse = {
+  rooms: Room[];
+  nextId: number;
+};
 
 export const useRoomsQuery = (
   options?: UseQueryOptions<
-    RoomsApiResponse,
+    RoomsResponse,
     Error,
-    RoomsApiResponse,
+    RoomsResponse,
     typeof ROOMS_QUERY_KEY
   >
 ) => {
-  const roomsQuery = useQuery(ROOMS_QUERY_KEY, getRooms, options);
-
-  const { data } = roomsQuery;
-  const sanitizedRooms = sanitizeRoomsData(data?.rooms);
-
+  const queryResult = useQuery(ROOMS_QUERY_KEY, getRooms, options);
   return {
-    ...roomsQuery,
-    rooms: sanitizedRooms,
-    nextId: data?.nextId,
+    ...queryResult,
+    rooms: queryResult.data?.rooms ?? [],
+    nextId: queryResult.data?.nextId,
   };
 };
 
-export const getRooms = () => fetch("/api/rooms").then((res) => res.json());
+export const getRooms = (): Promise<RoomsResponse> =>
+  fetch("/api/rooms")
+    .then((res) => res.json())
+    .then((data) => ({ ...data, rooms: sanitizeRoomsData(data.rooms) }));
 
 const sanitizeRoomsData = (data: unknown) => {
   if (!Array.isArray(data)) {

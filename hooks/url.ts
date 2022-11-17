@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { HOME_ROUTE } from "../constants";
 import { getParamValue } from "../helpers/url";
 
 export const useIdParams = () => {
@@ -11,4 +12,9 @@ export const useIdParams = () => {
     roomId: roomIdParam === undefined ? undefined : Number(roomIdParam),
     taskId: taskIdParam === undefined ? undefined : Number(taskIdParam),
   };
+};
+
+export const useOriginParam = () => {
+  const router = useRouter();
+  return getParamValue(router.query["origin"]) ?? HOME_ROUTE;
 };

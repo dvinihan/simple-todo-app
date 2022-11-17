@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
-import { Frequency, HOME_ROUTE, TASKS_QUERY_KEY } from "../constants";
+import { Frequency, TASKS_QUERY_KEY } from "../constants";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useSaveTask } from "../hooks/useSaveTask";
 import { Task } from "../types";
@@ -21,29 +21,30 @@ import DatePicker from "react-datepicker";
 import { ActionButton } from "../components/ActionButton";
 import { ActionModal } from "../components/ActionModal";
 import { PickerModal } from "../components/PickerModal";
-
 import "react-datepicker/dist/react-datepicker.css";
 
 type Props = {
   initialTask: Task;
+  pageOrigin: string;
 };
 
-const EditTaskForm = ({ initialTask }: Props) => {
+const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [task, setTask] = useState(initialTask);
 
   const router = useRouter();
+
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
   const { mutate: saveTask } = useSaveTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.push(HOME_ROUTE);
+      router.push(pageOrigin);
     },
   });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.push(HOME_ROUTE);
+      router.push(pageOrigin);
     },
   });
 

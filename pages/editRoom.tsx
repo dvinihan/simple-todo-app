@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { Room } from "../types";
 import { useRouter } from "next/router";
-import { useIdParams } from "../hooks/useIdParams";
+import { useIdParams } from "../hooks/url";
 import { LoadingPage } from "../components/LoadingPage";
 import { EditRoomForm } from "../components/EditRoomForm";
 import { ErrorPage } from "../components/ErrorPage";
+import { NavBar } from "../components/NavBar";
+import { HOME_ROUTE } from "../constants";
 
 const EditRoom = () => {
   const router = useRouter();
@@ -33,6 +35,11 @@ const EditRoom = () => {
     return <ErrorPage message={`No room found with ID ${roomId}`} />;
   }
 
-  return <EditRoomForm initialRoom={room} />;
+  return (
+    <>
+      <NavBar backUrl={HOME_ROUTE} title="Edit Room" />
+      <EditRoomForm initialRoom={room} />;
+    </>
+  );
 };
 export default EditRoom;
