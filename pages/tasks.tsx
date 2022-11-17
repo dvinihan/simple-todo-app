@@ -1,4 +1,4 @@
-import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE } from "../constants";
+import { EDIT_ROOM_ROUTE, EDIT_TASK_ROUTE, NEW_TASK_ROUTE } from "../constants";
 import { useTasksQuery } from "../hooks/useTasks";
 import { Box, Fab } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
@@ -52,7 +52,7 @@ const Tasks = () => {
         </Link>
       </Fab>
       <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
-        <Link href={`${EDIT_TASK_ROUTE}?roomId=${roomId}`}>
+        <Link href={`${NEW_TASK_ROUTE}?roomId=${roomId}`}>
           <Add />
         </Link>
       </Fab>

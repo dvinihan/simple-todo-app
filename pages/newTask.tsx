@@ -4,10 +4,12 @@ import { useIdParams } from "../hooks/useIdParams";
 import EditTaskForm from "../components/EditTaskForm";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
+import { useTasksQuery } from "../hooks/useTasks";
 
 const NewTask = () => {
   const router = useRouter();
-  const { roomId, nextId } = useIdParams();
+  const { roomId } = useIdParams();
+  const { nextId } = useTasksQuery();
 
   if (!router.isReady) {
     return <LoadingPage />;
@@ -15,10 +17,6 @@ const NewTask = () => {
 
   if (roomId === undefined) {
     return <ErrorPage message="roomId missing in URL" />;
-  }
-
-  if (nextId === undefined) {
-    return <ErrorPage message="nextId missing in URL" />;
   }
 
   return <EditTaskForm initialTask={new Task({ roomId, id: nextId })} />;
