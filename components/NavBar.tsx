@@ -1,7 +1,6 @@
 import { ArrowBack } from "@mui/icons-material";
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { useRouter } from "next/router";
-import { HOME_ROUTE } from "../constants";
 
 type Props = {
   backUrl?: string;

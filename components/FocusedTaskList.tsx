@@ -57,21 +57,26 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
             key={task.id}
           >
-            <Card sx={{ padding: "6px", marginTop: "10px" }}>
-              <Typography>
-                <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
-                <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
-                <span style={{ color: "red" }}>
-                  {task.daysUntilDue === 0
-                    ? "Due today"
-                    : task.daysUntilDue > 0
-                    ? `due in ${formatDuration({ days: task.daysUntilDue })}`
-                    : `${formatDuration({
-                        days: task.daysUntilDue * -1,
-                      })} overdue`}
-                </span>
-              </Typography>
-            </Card>
+            <a
+              data-testid={`task-${task.name}`}
+              style={{ textDecoration: "none" }}
+            >
+              <Card sx={{ padding: "6px", marginTop: "10px" }}>
+                <Typography>
+                  <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
+                  <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
+                  <span style={{ color: "red" }}>
+                    {task.daysUntilDue === 0
+                      ? "Due today"
+                      : task.daysUntilDue > 0
+                      ? `due in ${formatDuration({ days: task.daysUntilDue })}`
+                      : `${formatDuration({
+                          days: task.daysUntilDue * -1,
+                        })} overdue`}
+                  </span>
+                </Typography>
+              </Card>
+            </a>
           </Link>
         );
       })}
