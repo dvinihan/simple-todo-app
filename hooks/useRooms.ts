@@ -1,6 +1,7 @@
 import { useQuery, UseQueryOptions } from "react-query";
 import { Room } from "../types";
 import { ROOMS_QUERY_KEY } from "../constants";
+import fetch from "node-fetch";
 
 type RoomsResponse = {
   rooms: Room[];
@@ -24,7 +25,7 @@ export const useRoomsQuery = (
 };
 
 export const getRooms = (): Promise<RoomsResponse> =>
-  fetch("/api/rooms")
+  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/rooms`)
     .then((res) => res.json())
     .then((data) => ({ ...data, rooms: sanitizeRoomsData(data.rooms) }));
 

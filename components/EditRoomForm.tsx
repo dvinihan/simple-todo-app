@@ -35,6 +35,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
 
   useEffect(() => {
     router.beforePopState(() => {
+      console.log("vinihan - popping!");
       if (hasChanges) {
         setShouldShowDiscardModal(true);
         return false;
