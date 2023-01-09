@@ -1,16 +1,14 @@
 import { Room } from "../../types";
 import { withQueryClient } from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
-import { act, renderHook, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
 import nock from "nock";
-import Router, { useRouter } from "next/router";
+import Router from "next/router";
 
 jest.mock("next/router", () => require("next-router-mock"));
-
-const mockPush = jest.fn();
 
 let user: UserEvent;
 beforeAll(() => {
@@ -69,11 +67,11 @@ it("Delete room", async () => {
     expect(Router.asPath).toBe("/");
   });
 });
-it.only("Save changes on navigate away", async () => {
+it("Save changes on navigate away", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
 
   const saveRoomScope = nock("http://localhost:3000/api")
-    .post("/saveRoom", { id: 3, name: "a new room name" })
+    .post("/saveRoom", { id: 1, name: "Test room abcd" })
     .reply(200, {});
 
   withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
@@ -81,15 +79,31 @@ it.only("Save changes on navigate away", async () => {
   await user.type(nameInput, " abcd");
   expect(screen.getByLabelText("Name")).toHaveValue("Test room abcd");
 
-  const { result } = renderHook(() => {
-    return useRouter();
-  });
-  const router = result.current;
-  act(() => {
-    router.push("/");
-  });
+  await waitFor(async () => {
+    Router.events.emit("routeChangeStart");
 
-  await waitFor(() => {
     expect(screen.getByText("Save changes?")).toBeVisible();
+    await user.click(screen.getByText("Yes"));
+    expect(saveRoomScope.isDone()).toBeTruthy();
+  });
+});
+it("Don't save changes on navigate away", async () => {
+  const initialRoom = new Room({ id: 1, name: "Test room" });
+
+  const saveRoomScope = nock("http://localhost:3000/api")
+    .post("/saveRoom", { id: 1, name: "Test room abcd" })
+    .reply(200, {});
+
+  withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+  const nameInput = screen.getByLabelText("Name");
+  await user.type(nameInput, " abcd");
+  expect(screen.getByLabelText("Name")).toHaveValue("Test room abcd");
+
+  await waitFor(async () => {
+    Router.events.emit("routeChangeStart");
+
+    expect(screen.getByText("Save changes?")).toBeVisible();
+    await user.click(screen.getByText("No"));
+    expect(saveRoomScope.isDone()).toBeFalsy();
   });
 });
