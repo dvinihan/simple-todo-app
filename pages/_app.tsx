@@ -1,11 +1,8 @@
 import type { AppProps } from "next/app";
-import { createContext } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { AppContextProvider } from "../context/AppContext";
 import "../styles/globals.css";
-
-type AppContextState = {};
-export const AppContext = createContext<AppContextState | null>(null);
 
 export default function MyApp({
   Component,
@@ -15,9 +12,9 @@ export default function MyApp({
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContext.Provider value={{}}>
+      <AppContextProvider>
         <Component {...pageProps} />
-      </AppContext.Provider>
+      </AppContextProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

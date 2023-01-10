@@ -7,15 +7,22 @@ import {
 } from "@mui/material";
 
 type Props = {
+  onClose: () => void;
   onConfirm: () => void;
   onDeny: () => void;
   open: boolean;
   title: string;
 };
 
-export const ActionModal = ({ onConfirm, onDeny, open, title }: Props) => {
+export const ActionModal = ({
+  onClose,
+  onConfirm,
+  onDeny,
+  open,
+  title,
+}: Props) => {
   return (
-    <Dialog onClose={onDeny} open={open}>
+    <Dialog onClose={onClose} open={open}>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>
         <DialogActions>

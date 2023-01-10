@@ -14,13 +14,13 @@ export const NavBar = ({ backUrl, title }: Props) => {
     <>
       <AppBar>
         <Toolbar>
-          {backUrl && (
+          {/* {backUrl && (
             <ArrowBack
               fontSize="large"
               onClick={() => router.push(backUrl)}
               sx={{ marginRight: "10px" }}
             />
-          )}
+          )} */}
           <Typography fontSize={"30px"}>{title}</Typography>
         </Toolbar>
       </AppBar>

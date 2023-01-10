@@ -31,12 +31,19 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
 
   const [hasChanges, setHasChanges] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
-  const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
+  const [discardModalState, setDiscardModalState] = useState<{
+    open: boolean;
+    redirectUrl?: string;
+  }>({ open: false, redirectUrl: undefined });
+
+  const redirectToTaskList = () => {
+    router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
+  };
 
   useEffect(() => {
-    router.events.on("routeChangeStart", () => {
+    router.beforePopState(({ url }) => {
       if (hasChanges) {
-        setShouldShowDiscardModal(true);
+        setDiscardModalState({ open: true, redirectUrl: url });
         return false;
       }
       return true;
@@ -46,7 +53,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
   const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
+      redirectToTaskList();
     },
   });
   const { mutate: doDelete } = useDeleteRoom({
@@ -98,6 +105,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
       </Fab>
 
       <ActionModal
+        onClose={() => setShouldShowDeleteModal(false)}
         onConfirm={() => doDelete(room.id)}
         onDeny={() => setShouldShowDeleteModal(false)}
         open={shouldShowDeleteModal}
@@ -105,9 +113,10 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
       />
 
       <ActionModal
+        onClose={() => setDiscardModalState({ open: false })}
         onConfirm={save}
-        onDeny={() => setShouldShowDiscardModal(false)}
-        open={shouldShowDiscardModal}
+        onDeny={() => redirectToTaskList()}
+        open={discardModalState.open}
         title="Save changes?"
       />
     </>
