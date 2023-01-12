@@ -1,7 +1,6 @@
 import { useQuery, UseQueryOptions } from "react-query";
 import { Task } from "../types";
 import { TASKS_QUERY_KEY } from "../constants";
-import fetch from "node-fetch";
 
 type TasksResponse = {
   tasks: Task[];

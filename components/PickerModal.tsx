@@ -12,7 +12,7 @@ export const PickerModal = ({ onClose, onSelect, open, options }: Props) => {
     <Dialog onClose={onClose} open={open}>
       {options.map((option) => (
         <MenuItem
-          key="days-radio-button"
+          key={`picker-item-${option}`}
           onClick={() => onSelect(option)}
           value={option}
         >

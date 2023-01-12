@@ -1,6 +1,5 @@
 import { useMutation, UseMutationOptions } from "react-query";
 import { Room } from "../types";
-import fetch from "node-fetch";
 
 export const useSaveRoom = (options: UseMutationOptions<void, any, Room>) => {
   return useMutation(

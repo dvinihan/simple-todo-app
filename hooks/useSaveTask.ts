@@ -1,6 +1,5 @@
 import { useMutation, UseMutationOptions } from "react-query";
 import { Task } from "../types";
-import fetch from "node-fetch";
 
 export const useSaveTask = (options: UseMutationOptions<Task, any, Task>) => {
   return useMutation(async (newTask: Task) => {

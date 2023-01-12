@@ -1,12 +1,12 @@
 import { Room } from "../../types";
 import { withQueryClient } from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
-import nock from "nock";
 import Router from "next/router";
+import fetchMock from "fetch-mock";
 
 jest.mock("next/router", () => require("next-router-mock"));
 
@@ -22,17 +22,16 @@ it("Save new room", async () => {
   await user.type(nameInput, "a new room name");
   expect(screen.getByLabelText("Name")).toHaveValue("a new room name");
 
-  const saveRoomScope = nock("http://localhost:3000/api")
-    .post("/saveRoom", { id: 3, name: "a new room name" })
-    .reply(200, {});
-
+  fetchMock.post(/api\/saveRoom/, {}).post("/saveRoom", {});
   await user.click(screen.getByText("Save"));
-  expect(saveRoomScope.isDone()).toBeTruthy();
 
-  // effects in onSettled need to be waited for
-  await waitFor(() => {
-    expect(Router.asPath).toBe(`${TASKS_ROUTE}?roomId=3`);
+  const [_, options] = fetchMock.lastCall(/api\/saveRoom/) ?? [];
+  expect(JSON.parse(options?.body as string)).toEqual({
+    id: 3,
+    name: "a new room name",
   });
+
+  expect(Router.asPath).toBe(`${TASKS_ROUTE}?roomId=3`);
 });
 it("Existing room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
@@ -47,9 +46,7 @@ it("Existing room", async () => {
 it("Delete room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
 
-  const deleteRoomScope = nock("http://localhost:3000/api")
-    .delete("/deleteRoom/1")
-    .reply(200, {});
+  fetchMock.delete(/api\/deleteRoom\/1/, {});
 
   withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   Router.asPath = "/startingPath";
@@ -57,13 +54,11 @@ it("Delete room", async () => {
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
   expect(Router.asPath).toBe("/startingPath");
-  expect(deleteRoomScope.isDone()).toBeFalsy();
+
+  expect(fetchMock.called(/api\/deleteRoom\/1/)).toBe(false);
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
-  expect(deleteRoomScope.isDone()).toBeTruthy();
+  expect(fetchMock.called(/api\/deleteRoom\/1/)).toBe(true);
 
-  // effects in onSettled need to be waited for
-  await waitFor(() => {
-    expect(Router.asPath).toBe("/");
-  });
+  expect(Router.asPath).toBe("/");
 });

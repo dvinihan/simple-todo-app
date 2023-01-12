@@ -1,7 +1,6 @@
 import { useQuery, UseQueryOptions } from "react-query";
 import { Room } from "../types";
 import { ROOMS_QUERY_KEY } from "../constants";
-import fetch from "node-fetch";
 
 type RoomsResponse = {
   rooms: Room[];

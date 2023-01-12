@@ -35,16 +35,21 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
 
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
+
+  const redirectToOrigin = () => {
+    router.push(pageOrigin);
+  };
+
   const { mutate: saveTask } = useSaveTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.push(pageOrigin);
+      redirectToOrigin();
     },
   });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      router.push(pageOrigin);
+      redirectToOrigin();
     },
   });
 
@@ -53,16 +58,19 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
   const [hasChanges, setHasChanges] = useState(false);
-  const [shouldShowDiscardModal, setShouldShowDiscardModal] = useState(false);
+  const [discardModalState, setDiscardModalState] = useState<{
+    open: boolean;
+    redirectUrl?: string;
+  }>({ open: false, redirectUrl: undefined });
 
   const [errors, setErrors] = useState<{
     name?: string;
   }>({});
 
   useEffect(() => {
-    router.beforePopState(() => {
+    router.beforePopState(({ url }) => {
       if (hasChanges) {
-        setShouldShowDiscardModal(true);
+        setDiscardModalState({ open: true, redirectUrl: url });
         return false;
       }
       return true;
@@ -84,7 +92,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   };
 
   const onChangeDate = (date: Date) => {
-    setTask((t) => ({ ...t, lastDone: date.getMilliseconds() }));
+    setTask((t) => ({ ...t, lastDone: date.getTime() }));
     setHasChanges(true);
   };
 
@@ -164,6 +172,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         <DatePicker
           className="date-picker"
           onChange={onChangeDate}
+          openToDate={new Date()}
           selected={new Date(task.lastDone)}
         />
 
@@ -202,6 +211,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
       </Fab>
 
       <ActionModal
+        onClose={() => setShouldShowDeleteModal(false)}
         onConfirm={() => doDelete(task.id)}
         onDeny={() => setShouldShowDeleteModal(false)}
         open={shouldShowDeleteModal}
@@ -209,9 +219,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
       />
 
       <ActionModal
+        onClose={() => setDiscardModalState({ open: false })}
         onConfirm={() => save(task)}
-        onDeny={() => setShouldShowDiscardModal(false)}
-        open={shouldShowDiscardModal}
+        onDeny={() => redirectToOrigin()}
+        open={discardModalState.open}
         title="Save changes?"
       />
     </>

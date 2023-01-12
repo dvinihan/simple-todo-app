@@ -1,6 +1,5 @@
 import { useMutation, UseMutationOptions } from "react-query";
 import { Room } from "../types";
-import fetch from "node-fetch";
 
 export const useDeleteRoom = (
   options: UseMutationOptions<any, any, Room["id"]>

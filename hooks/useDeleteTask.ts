@@ -1,6 +1,5 @@
 import { useMutation, UseMutationOptions } from "react-query";
 import { Task } from "../types";
-import fetch from "node-fetch";
 
 export const useDeleteTask = (
   options: UseMutationOptions<any, any, Task["id"]>
