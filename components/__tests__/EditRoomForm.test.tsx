@@ -1,5 +1,5 @@
 import { Room } from "../../types";
-import { withQueryClient } from "../../util/test-utils";
+import { renderWithQueryClient } from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
 import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
@@ -14,9 +14,12 @@ let user: UserEvent;
 beforeAll(() => {
   user = userEvent.setup();
 });
+beforeEach(() => {
+  fetchMock.reset();
+});
 it("Save new room", async () => {
   const initialRoom = new Room({ id: 3 });
-  withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
   expect(nameInput).toHaveValue("");
   await user.type(nameInput, "a new room name");
@@ -35,7 +38,7 @@ it("Save new room", async () => {
 });
 it("Existing room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
-  withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
   expect(nameInput).toHaveValue("Test room");
   await user.type(nameInput, " with a different name");
@@ -48,7 +51,7 @@ it("Delete room", async () => {
 
   fetchMock.delete(/api\/deleteRoom\/1/, {});
 
-  withQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   Router.asPath = "/startingPath";
   expect(Router.asPath).toBe("/startingPath");
   await user.click(screen.getByTestId("DeleteIcon"));
@@ -61,4 +64,12 @@ it("Delete room", async () => {
   expect(fetchMock.called(/api\/deleteRoom\/1/)).toBe(true);
 
   expect(Router.asPath).toBe("/");
+});
+it("Save room error", async () => {
+  const initialRoom = new Room({ id: 1 });
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+  expect(screen.getByLabelText("Name")).toHaveValue("");
+
+  await user.click(screen.getByText("Save"));
+  expect(screen.getByText("You must enter a room name")).toBeVisible();
 });

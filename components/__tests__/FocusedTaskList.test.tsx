@@ -1,12 +1,8 @@
 import { FocusedTaskList } from "../FocusedTaskList";
 import { Frequency } from "../../constants";
-import { withQueryClient } from "../../util/test-utils";
-import { useRoomsQuery } from "../../hooks/useRooms";
-import { useTasksQuery } from "../../hooks/useTasks";
+import { renderWithQueryClient } from "../../util/test-utils";
 import { screen } from "@testing-library/react";
-
-jest.mock("../../hooks/useRooms.ts");
-jest.mock("../../hooks/useTasks.ts");
+import nock from "nock";
 
 const mockRooms = {
   rooms: [
@@ -52,14 +48,18 @@ const mockTasks = {
 };
 
 beforeEach(() => {
-  (useRoomsQuery as jest.Mock).mockReturnValue(mockRooms);
-  (useTasksQuery as jest.Mock).mockReturnValue(mockTasks);
+  // fetchMock.reset();
+  // fetchMock
+  //   .get(/api\/rooms/, { body: mockRooms })
+  //   .get(/api\/tasks/, { body: mockTasks });
+  nock(/api/).get("/rooms").reply(200, mockRooms);
+  nock(/api/).get("/tasks").reply(200, mockTasks);
 });
 
 it("overdue tasks - no room id", async () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
-  withQueryClient(<FocusedTaskList type="overdue" />);
-  expect(screen.queryByText("Overdue tasks")).toBeVisible();
+  renderWithQueryClient(<FocusedTaskList type="overdue" />);
+  expect(screen.getByText("Overdue tasks")).toBeVisible();
   expect(screen.queryByText("Do dishes")).toBeVisible();
   expect(screen.queryByText("Laundry")).toBeVisible();
   expect(screen.queryByText("Take out trash")).not.toBeInTheDocument();
@@ -71,7 +71,7 @@ it("overdue tasks - no room id", async () => {
 
 it("upcoming tasks - no room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
-  withQueryClient(<FocusedTaskList type="upcoming" />);
+  renderWithQueryClient(<FocusedTaskList type="upcoming" />);
   expect(screen.queryByText("Upcoming tasks")).toBeVisible();
   expect(screen.queryByText("Do dishes")).not.toBeInTheDocument();
   expect(screen.queryByText("Laundry")).not.toBeInTheDocument();
@@ -84,7 +84,7 @@ it("upcoming tasks - no room id", () => {
 
 it("overdue tasks - with room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
-  withQueryClient(<FocusedTaskList roomId={0} type="overdue" />);
+  renderWithQueryClient(<FocusedTaskList roomId={0} type="overdue" />);
   expect(screen.queryByText("Overdue tasks")).toBeVisible();
   expect(screen.queryByText("Do dishes")).toBeVisible();
   expect(screen.queryByText("Laundry")).not.toBeInTheDocument();
@@ -97,7 +97,7 @@ it("overdue tasks - with room id", () => {
 
 it("upcoming tasks - with room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
-  withQueryClient(<FocusedTaskList roomId={0} type="upcoming" />);
+  renderWithQueryClient(<FocusedTaskList roomId={0} type="upcoming" />);
   expect(screen.queryByText("Upcoming tasks")).toBeVisible();
   expect(screen.queryByText("Do dishes")).not.toBeInTheDocument();
   expect(screen.queryByText("Laundry")).not.toBeInTheDocument();
@@ -110,14 +110,14 @@ it("upcoming tasks - with room id", () => {
 
 it("overdue tasks - render nothing", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2021"));
-  withQueryClient(<FocusedTaskList type="overdue" />);
+  renderWithQueryClient(<FocusedTaskList type="overdue" />);
   expect(screen.queryByText("Overdue tasks")).not.toBeInTheDocument();
   expect(screen.queryByTestId(/task-.*/)).not.toBeInTheDocument;
 });
 
 it("upcoming tasks - render nothing", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2021"));
-  withQueryClient(<FocusedTaskList type="upcoming" />);
+  renderWithQueryClient(<FocusedTaskList type="upcoming" />);
   expect(screen.queryByText("Upcoming tasks")).not.toBeInTheDocument();
   expect(screen.queryByTestId(/task-.*/)).not.toBeInTheDocument;
 });

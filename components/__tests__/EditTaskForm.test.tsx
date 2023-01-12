@@ -1,5 +1,5 @@
 import { Task } from "../../types";
-import { withQueryClient } from "../../util/test-utils";
+import { renderWithQueryClient } from "../../util/test-utils";
 import { screen } from "@testing-library/react";
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup";
 import userEvent from "@testing-library/user-event";
@@ -28,17 +28,19 @@ const mockRoomsResponse = {
   ],
 };
 
-fetchMock
-  .get(/api\/rooms/, {
-    body: mockRoomsResponse,
-  })
-  .post(/api\/saveTask/, {});
-
 let user: UserEvent;
 beforeAll(() => {
   user = userEvent.setup();
 });
-it("Save new task", async () => {
+beforeEach(() => {
+  fetchMock.reset();
+  fetchMock
+    .get(/api\/rooms/, {
+      body: mockRoomsResponse,
+    })
+    .post(/api\/saveTask/, {});
+});
+it.only("Save new task", async () => {
   jest
     .useFakeTimers({
       doNotFake: ["setTimeout"],
@@ -46,7 +48,7 @@ it("Save new task", async () => {
     .setSystemTime(new Date("11/17/2022"));
 
   const initialTask = new Task({ id: 3, roomId: 2 });
-  withQueryClient(
+  renderWithQueryClient(
     <EditTaskForm initialTask={initialTask} pageOrigin="/fakeorigin" />
   );
   const nameInput = screen.getByLabelText("Name");
@@ -110,7 +112,7 @@ it("Existing task", async () => {
     lastDone: new Date("10/1/2022").getTime(),
     roomId: 0,
   });
-  withQueryClient(
+  renderWithQueryClient(
     <EditTaskForm initialTask={initialTask} pageOrigin="fake.com" />
   );
   const nameInput = screen.getByLabelText("Name");
@@ -180,7 +182,7 @@ it("Delete task", async () => {
 
   fetchMock.delete(/api\/deleteTask\/1/, {});
 
-  withQueryClient(
+  renderWithQueryClient(
     <EditTaskForm initialTask={initialTask} pageOrigin="faker.org" />
   );
   Router.asPath = "/startingPath";
@@ -195,4 +197,14 @@ it("Delete task", async () => {
   expect(fetchMock.called(/api\/deleteTask\/1/)).toBe(true);
 
   expect(Router.asPath).toBe("faker.org");
+});
+it("Save task error", async () => {
+  const initialTask = new Task({ id: 1 });
+  renderWithQueryClient(
+    <EditTaskForm initialTask={initialTask} pageOrigin="" />
+  );
+  expect(screen.getByLabelText("Name")).toHaveValue("");
+
+  await user.click(screen.getByText("Save"));
+  expect(screen.getByText("You must enter a task name")).toBeVisible();
 });
