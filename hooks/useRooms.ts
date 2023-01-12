@@ -26,7 +26,10 @@ export const useRoomsQuery = (
 export const getRooms = (): Promise<RoomsResponse> =>
   fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/rooms`)
     .then((res) => res.json())
-    .then((data) => ({ ...data, rooms: sanitizeRoomsData(data.rooms) }));
+    .then((data) => {
+      console.log(data);
+      return { ...data, rooms: sanitizeRoomsData(data.rooms) };
+    });
 
 const sanitizeRoomsData = (data: unknown) => {
   if (!Array.isArray(data)) {
