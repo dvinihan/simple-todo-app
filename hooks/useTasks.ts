@@ -24,7 +24,7 @@ export const useTasksQuery = (
 };
 
 export const getTasks = (): Promise<TasksResponse> =>
-  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/tasks`)
+  fetch(`/api/tasks`)
     .then((res) => res.json())
     .then((data) => ({ ...data, tasks: sanitizeTasksData(data.tasks) }));
 

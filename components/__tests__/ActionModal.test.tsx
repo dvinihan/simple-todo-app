@@ -6,8 +6,10 @@ it("Renders when open", async () => {
   const user = userEvent.setup();
   const onConfirm = jest.fn();
   const onDeny = jest.fn();
+  const onClose = jest.fn();
   render(
     <ActionModal
+      onClose={onClose}
       onConfirm={onConfirm}
       onDeny={onDeny}
       open
@@ -19,12 +21,16 @@ it("Renders when open", async () => {
   expect(onConfirm).toBeCalledTimes(1);
   await user.click(screen.getByText("No"));
   expect(onDeny).toBeCalledTimes(1);
+  await user.keyboard("[Escape]");
+  expect(onClose).toBeCalledTimes(1);
 });
 it("Doesn't render when closed", () => {
   const onConfirm = jest.fn();
   const onDeny = jest.fn();
+  const onClose = jest.fn();
   render(
     <ActionModal
+      onClose={onClose}
       onConfirm={onConfirm}
       onDeny={onDeny}
       open={false}
@@ -36,4 +42,5 @@ it("Doesn't render when closed", () => {
   expect(screen.queryByText("No")).not.toBeInTheDocument();
   expect(onConfirm).toBeCalledTimes(0);
   expect(onDeny).toBeCalledTimes(0);
+  expect(onClose).toBeCalledTimes(0);
 });
