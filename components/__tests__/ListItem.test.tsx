@@ -12,7 +12,7 @@ jest.mock("next/link", () => {
   return MockNextLink;
 });
 
-it("display clickable item", async () => {
+test("display clickable item", async () => {
   const user = userEvent.setup();
   const onClick = jest.fn();
   renderWithQueryClient(

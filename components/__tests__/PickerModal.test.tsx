@@ -5,7 +5,7 @@ import { PickerModal } from "../PickerModal";
 
 const user = userEvent.setup();
 
-it("All actions function and text is displayed", async () => {
+test("All actions function and text is displayed", async () => {
   const onClose = jest.fn();
   const onSelect = jest.fn();
   renderWithQueryClient(
@@ -25,7 +25,7 @@ it("All actions function and text is displayed", async () => {
   await user.keyboard("[Escape]");
   expect(onClose).toBeCalledTimes(1);
 });
-it("does not render if not open", () => {
+test("does not render if not open", () => {
   const onClose = jest.fn();
   const onSelect = jest.fn();
   renderWithQueryClient(

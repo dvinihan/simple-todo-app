@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { ActionModal } from "../ActionModal";
 import userEvent from "@testing-library/user-event";
 
-it("Renders when open", async () => {
+test("Renders when open", async () => {
   const user = userEvent.setup();
   const onConfirm = jest.fn();
   const onDeny = jest.fn();
@@ -24,7 +24,7 @@ it("Renders when open", async () => {
   await user.keyboard("[Escape]");
   expect(onClose).toBeCalledTimes(1);
 });
-it("Doesn't render when closed", () => {
+test("Doesn't render when closed", () => {
   const onConfirm = jest.fn();
   const onDeny = jest.fn();
   const onClose = jest.fn();

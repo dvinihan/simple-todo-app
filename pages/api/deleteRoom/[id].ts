@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getParamValue } from "../../../helpers/url";
+import { getParamValue } from "../../../helpers/getParamValue";
 import { Room, Task } from "../../../types";
 import clientPromise from "../../../util/mongodb";
 

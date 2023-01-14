@@ -52,7 +52,7 @@ beforeEach(() => {
   (useTasksQuery as jest.Mock).mockReturnValue({ tasks: mockTasks });
 });
 
-it("overdue tasks - no room id", async () => {
+test("overdue tasks - no room id", async () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
   renderWithQueryClient(<FocusedTaskList type="overdue" />);
   expect(screen.getByText("Overdue tasks")).toBeVisible();
@@ -65,7 +65,7 @@ it("overdue tasks - no room id", async () => {
   );
 });
 
-it("upcoming tasks - no room id", () => {
+test("upcoming tasks - no room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
   renderWithQueryClient(<FocusedTaskList type="upcoming" />);
   expect(screen.getByText("Upcoming tasks")).toBeVisible();
@@ -78,7 +78,7 @@ it("upcoming tasks - no room id", () => {
   );
 });
 
-it("overdue tasks - with room id", () => {
+test("overdue tasks - with room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
   renderWithQueryClient(<FocusedTaskList roomId={0} type="overdue" />);
   expect(screen.getByText("Overdue tasks")).toBeVisible();
@@ -91,7 +91,7 @@ it("overdue tasks - with room id", () => {
   );
 });
 
-it("upcoming tasks - with room id", () => {
+test("upcoming tasks - with room id", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2022"));
   renderWithQueryClient(<FocusedTaskList roomId={0} type="upcoming" />);
   expect(screen.getByText("Upcoming tasks")).toBeVisible();
@@ -104,14 +104,14 @@ it("upcoming tasks - with room id", () => {
   );
 });
 
-it("overdue tasks - render nothing", () => {
+test("overdue tasks - render nothing", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2021"));
   renderWithQueryClient(<FocusedTaskList type="overdue" />);
   expect(screen.queryByText("Overdue tasks")).not.toBeInTheDocument();
   expect(screen.queryByTestId(/task-.*/)).not.toBeInTheDocument;
 });
 
-it("upcoming tasks - render nothing", () => {
+test("upcoming tasks - render nothing", () => {
   jest.useFakeTimers().setSystemTime(new Date("11/17/2021"));
   renderWithQueryClient(<FocusedTaskList type="upcoming" />);
   expect(screen.queryByText("Upcoming tasks")).not.toBeInTheDocument();

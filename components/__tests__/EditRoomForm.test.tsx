@@ -23,7 +23,7 @@ beforeEach(() => {
   });
   (useDeleteRoom as jest.Mock).mockReturnValue({ mutate: mockDeleteRoom });
 });
-it("Save new room", async () => {
+test("Save new room", async () => {
   const initialRoom = new Room({ id: 3 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -41,7 +41,7 @@ it("Save new room", async () => {
   // TODO
   // expect(Router.asPath).toBe(`${TASKS_ROUTE}?roomId=3`);
 });
-it("Existing room", async () => {
+test("Existing room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -51,7 +51,7 @@ it("Existing room", async () => {
     "Test room with a different name"
   );
 });
-it("Delete room", async () => {
+test("Delete room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   // Router.asPath = "/startingPath";
@@ -68,7 +68,7 @@ it("Delete room", async () => {
   // TODO
   // expect(Router.asPath).toBe("/");
 });
-it("Save room error", async () => {
+test("Save room error", async () => {
   const initialRoom = new Room({ id: 1 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   expect(screen.getByLabelText("Name")).toHaveValue("");

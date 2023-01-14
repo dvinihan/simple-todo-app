@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { HOME_ROUTE } from "../constants";
-import { getParamValue } from "../helpers/url";
+import { getParamValue } from "../helpers/getParamValue";
 
 export const useIdParams = () => {
   const router = useRouter();

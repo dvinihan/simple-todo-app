@@ -41,7 +41,7 @@ beforeEach(() => {
   (useSaveTask as jest.Mock).mockReturnValue({ mutate: mockSaveTask });
   (useDeleteTask as jest.Mock).mockReturnValue({ mutate: mockDeleteTask });
 });
-it("Save new task", async () => {
+test("Save new task", async () => {
   jest
     .useFakeTimers({
       doNotFake: ["setTimeout"],
@@ -99,7 +99,7 @@ it("Save new task", async () => {
   // TODO
   // expect(Router.asPath).toBe("/fakeorigin");
 });
-it("Existing task", async () => {
+test("Existing task", async () => {
   jest
     .useFakeTimers({
       doNotFake: ["setTimeout"],
@@ -166,7 +166,7 @@ it("Existing task", async () => {
   // TODO
   // expect(Router.asPath).toBe("fake.com");
 });
-it("Delete task", async () => {
+test("Delete task", async () => {
   jest
     .useFakeTimers({
       doNotFake: ["setTimeout"],
@@ -199,7 +199,7 @@ it("Delete task", async () => {
   // TODO
   // expect(Router.asPath).toBe("faker.org");
 });
-it("Save task error", async () => {
+test("Save task error", async () => {
   const initialTask = new Task({ id: 1 });
   renderWithQueryClient(
     <EditTaskForm initialTask={initialTask} pageOrigin="" />

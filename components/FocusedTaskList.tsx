@@ -2,8 +2,9 @@ import { Card, Typography } from "@mui/material";
 import { formatDuration } from "date-fns";
 import Link from "next/link";
 import { useMemo } from "react";
-import { EDIT_TASK_ROUTE, Frequency } from "../constants";
-import { getDaysUntilDue, getFrequencyInDays } from "../helpers/tasks";
+import { EDIT_TASK_ROUTE } from "../constants";
+import { getDaysUntilDue } from "../helpers/getDaysUntilDue";
+import { getFrequencyInDays } from "../helpers/getFrequencyInDays";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { useTasksQuery } from "../hooks/useTasks";
 import { TaskWithDaysUntilDue } from "../types";
@@ -16,22 +17,6 @@ type Props = {
 export const FocusedTaskList = ({ type, roomId }: Props) => {
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
-  // const rooms = [
-  //   {
-  //     id: 0,
-  //     name: "Family Room",
-  //   },
-  // ];
-  // const tasks = [
-  //   {
-  //     id: 0,
-  //     frequencyAmount: 7,
-  //     frequencyType: Frequency.DAYS,
-  //     lastDone: new Date("1/1/22"),
-  //     name: "Do dishes",
-  //     roomId: 0,
-  //   },
-  // ];
 
   const tasksWithDaysUntilDue: TaskWithDaysUntilDue[] = tasks
     .filter((t) => (roomId === undefined ? true : t.roomId === roomId))
