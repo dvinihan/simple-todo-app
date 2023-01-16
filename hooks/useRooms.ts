@@ -24,7 +24,7 @@ export const useRoomsQuery = (
 };
 
 export const getRooms = (): Promise<RoomsResponse> =>
-  fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/rooms`)
+  fetch(`/api/rooms`)
     .then((res) => res.json())
     .then((data) => {
       console.log(data);

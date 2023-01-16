@@ -1,36 +1,14 @@
 import { Room } from "../../types";
-import {
-  callMutationOptionFunctions,
-  renderWithQueryClient,
-} from "../../util/test-utils";
+import { renderWithQueryClient } from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
-import { useSaveRoom } from "../../hooks/useSaveRoom";
-import { useDeleteRoom } from "../../hooks/useDeleteRoom";
-
-jest.mock("../../hooks/useSaveRoom");
-jest.mock("../../hooks/useDeleteRoom");
+import fetchMock from "fetch-mock";
 
 const user = userEvent.setup();
-const mockSaveRoom = jest.fn();
-const mockDeleteRoom = jest.fn();
 const mockPush = jest.fn();
 const mockBeforePopState = jest.fn();
-
-(useSaveRoom as jest.Mock).mockImplementation((options) => {
-  callMutationOptionFunctions(options);
-  return {
-    mutate: mockSaveRoom,
-    isLoading: false,
-  };
-});
-
-(useDeleteRoom as jest.Mock).mockImplementation((options) => {
-  callMutationOptionFunctions(options);
-  return { mutate: mockDeleteRoom };
-});
 
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
 (useRouter as jest.Mock).mockImplementation(() => ({
@@ -39,6 +17,8 @@ const useRouter = jest.spyOn(require("next/router"), "useRouter");
 }));
 
 it("Save new room", async () => {
+  const mockRequest = fetchMock.post("/api/saveRoom", { body: {} });
+
   const initialRoom = new Room({ id: 3 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -48,10 +28,13 @@ it("Save new room", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  expect(mockSaveRoom).toBeCalledWith({
-    id: 3,
-    name: "a new room name",
-  });
+  const [_, options] = mockRequest.lastCall("/api/saveRoom") ?? [];
+  expect(options?.body).toEqual(
+    JSON.stringify({
+      id: 3,
+      name: "a new room name",
+    })
+  );
 
   expect(mockPush).toBeCalledWith(`${TASKS_ROUTE}?roomId=3`);
 });
@@ -66,15 +49,19 @@ it("Existing room", async () => {
   );
 });
 it("Delete room", async () => {
+  const mockRequest = fetchMock.delete("/api/deleteRoom/1", { body: {} });
+
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
 
-  expect(mockDeleteRoom).toBeCalledTimes(0);
+  expect(mockRequest.lastCall("/api/deleteRoom")).toBeUndefined();
+
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
-  expect(mockDeleteRoom).toBeCalledTimes(1);
+
+  expect(mockRequest.called()).toBe(true);
 
   expect(mockPush).toBeCalledWith("/");
 });
