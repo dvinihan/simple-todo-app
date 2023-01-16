@@ -1,29 +1,44 @@
 import { Room } from "../../types";
-import { renderWithQueryClient } from "../../util/test-utils";
+import {
+  callMutationOptionFunctions,
+  renderWithQueryClient,
+} from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
-import Router from "next/router";
 import { useSaveRoom } from "../../hooks/useSaveRoom";
 import { useDeleteRoom } from "../../hooks/useDeleteRoom";
 
-jest.mock("next/router", () => require("next-router-mock"));
 jest.mock("../../hooks/useSaveRoom");
 jest.mock("../../hooks/useDeleteRoom");
 
 const user = userEvent.setup();
 const mockSaveRoom = jest.fn();
 const mockDeleteRoom = jest.fn();
+const mockPush = jest.fn();
+const mockBeforePopState = jest.fn();
 
-beforeEach(() => {
-  (useSaveRoom as jest.Mock).mockReturnValue({
+(useSaveRoom as jest.Mock).mockImplementation((options) => {
+  callMutationOptionFunctions(options);
+  return {
     mutate: mockSaveRoom,
     isLoading: false,
-  });
-  (useDeleteRoom as jest.Mock).mockReturnValue({ mutate: mockDeleteRoom });
+  };
 });
-test("Save new room", async () => {
+
+(useDeleteRoom as jest.Mock).mockImplementation((options) => {
+  callMutationOptionFunctions(options);
+  return { mutate: mockDeleteRoom };
+});
+
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+(useRouter as jest.Mock).mockImplementation(() => ({
+  push: mockPush,
+  beforePopState: mockBeforePopState,
+}));
+
+it("Save new room", async () => {
   const initialRoom = new Room({ id: 3 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -38,10 +53,9 @@ test("Save new room", async () => {
     name: "a new room name",
   });
 
-  // TODO
-  // expect(Router.asPath).toBe(`${TASKS_ROUTE}?roomId=3`);
+  expect(mockPush).toBeCalledWith(`${TASKS_ROUTE}?roomId=3`);
 });
-test("Existing room", async () => {
+it("Existing room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -51,24 +65,20 @@ test("Existing room", async () => {
     "Test room with a different name"
   );
 });
-test("Delete room", async () => {
+it("Delete room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
-  // Router.asPath = "/startingPath";
-  // expect(Router.asPath).toBe("/startingPath");
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
-  // expect(Router.asPath).toBe("/startingPath");
 
   expect(mockDeleteRoom).toBeCalledTimes(0);
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
   expect(mockDeleteRoom).toBeCalledTimes(1);
 
-  // TODO
-  // expect(Router.asPath).toBe("/");
+  expect(mockPush).toBeCalledWith("/");
 });
-test("Save room error", async () => {
+it("Save room error", async () => {
   const initialRoom = new Room({ id: 1 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   expect(screen.getByLabelText("Name")).toHaveValue("");
