@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRoomsQuery } from "../hooks/useRooms";
 import { Room } from "../types";
 import { useRouter } from "next/router";
-import { useIdParams } from "../hooks/url";
+import { useIdParams } from "../hooks/useIdParams";
 import { LoadingPage } from "../components/LoadingPage";
 import { EditRoomForm } from "../components/EditRoomForm";
 import { ErrorPage } from "../components/ErrorPage";

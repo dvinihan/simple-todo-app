@@ -1,12 +1,13 @@
 import { useTasksQuery } from "../hooks/useTasks";
 import { Task } from "../types";
 import { LoadingPage } from "../components/LoadingPage";
-import { useIdParams, useOriginParam } from "../hooks/url";
+import { useIdParams } from "../hooks/useIdParams";
 import EditTaskForm from "../components/EditTaskForm";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
 import { NavBar } from "../components/NavBar";
+import { useOriginParam } from "../hooks/useOriginParam";
 
 const EditTask = () => {
   const router = useRouter();

@@ -11,7 +11,7 @@ import { useRoomsQuery } from "../hooks/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import Link from "next/link";
 import { ListItem } from "../components/ListItem";
-import { useIdParams } from "../hooks/url";
+import { useIdParams } from "../hooks/useIdParams";
 import { PageError } from "../components/PageError";
 import { LoadingPage } from "../components/LoadingPage";
 import { useRouter } from "next/router";
