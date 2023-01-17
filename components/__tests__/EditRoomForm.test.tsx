@@ -17,7 +17,8 @@ const useRouter = jest.spyOn(require("next/router"), "useRouter");
 }));
 
 it("Save new room", async () => {
-  const mockRequest = fetchMock.post("/api/saveRoom", { body: {} });
+  const saveRoomUrl = "/api/saveRoom";
+  const mockRequest = fetchMock.post(saveRoomUrl, { body: {} });
 
   const initialRoom = new Room({ id: 3 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
@@ -28,7 +29,7 @@ it("Save new room", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  const [_, options] = mockRequest.lastCall("/api/saveRoom") ?? [];
+  const [_, options] = mockRequest.lastCall(saveRoomUrl) ?? [];
   expect(options?.body).toEqual(
     JSON.stringify({
       id: 3,
@@ -49,19 +50,20 @@ it("Existing room", async () => {
   );
 });
 it("Delete room", async () => {
-  const mockRequest = fetchMock.delete("/api/deleteRoom/1", { body: {} });
+  const deleteRoomUrl = "/api/deleteRoom/1";
+  const mockRequest = fetchMock.delete(deleteRoomUrl, { body: {} });
 
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
 
-  expect(mockRequest.lastCall("/api/deleteRoom")).toBeUndefined();
+  expect(mockRequest.called(deleteRoomUrl)).toBe(false);
 
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
 
-  expect(mockRequest.called()).toBe(true);
+  expect(mockRequest.called(deleteRoomUrl)).toBe(true);
 
   expect(mockPush).toBeCalledWith("/");
 });

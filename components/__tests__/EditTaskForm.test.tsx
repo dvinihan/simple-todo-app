@@ -3,20 +3,18 @@ import { renderWithQueryClient } from "../../util/test-utils";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditTaskForm from "../EditTaskForm";
-import Router from "next/router";
 import { Frequency } from "../../constants";
-import { useRoomsQuery } from "../../hooks/useRooms";
-import { useSaveTask } from "../../hooks/useSaveTask";
-import { useDeleteTask } from "../../hooks/useDeleteTask";
+import fetchMock from "fetch-mock";
 
-jest.mock("next/router", () => require("next-router-mock"));
-jest.mock("../../hooks/useRooms");
-jest.mock("../../hooks/useSaveTask");
-jest.mock("../../hooks/useDeleteTask");
-
+const mockPush = jest.fn();
+const mockBeforePopState = jest.fn();
 const user = userEvent.setup();
-const mockSaveTask = jest.fn();
-const mockDeleteTask = jest.fn();
+
+const useRouter = jest.spyOn(require("next/router"), "useRouter");
+(useRouter as jest.Mock).mockImplementation(() => ({
+  push: mockPush,
+  beforePopState: mockBeforePopState,
+}));
 
 const mockRoomsResponse = {
   nextId: 4,
@@ -36,11 +34,12 @@ const mockRoomsResponse = {
   ],
 };
 
-beforeEach(() => {
-  (useRoomsQuery as jest.Mock).mockReturnValue(mockRoomsResponse);
-  (useSaveTask as jest.Mock).mockReturnValue({ mutate: mockSaveTask });
-  (useDeleteTask as jest.Mock).mockReturnValue({ mutate: mockDeleteTask });
+fetchMock.get("/api/rooms", {
+  body: mockRoomsResponse,
 });
+const mockSaveTaskRequest = fetchMock.post("/api/saveTask", {});
+const mockDeleteTaskRequest = fetchMock.delete("/api/deleteTask/1", {});
+
 test("Save new task", async () => {
   jest
     .useFakeTimers({
@@ -87,7 +86,8 @@ test("Save new task", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  expect(mockSaveTask).toBeCalledWith({
+  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  expect(JSON.parse(options?.body as string)).toEqual({
     id: 3,
     name: "a new task name",
     roomId: 0,
@@ -154,7 +154,8 @@ test("Existing task", async () => {
   expect(screen.getByDisplayValue("11/14/2022")).toBeVisible();
 
   await user.click(screen.getByText("Save"));
-  expect(mockSaveTask).toBeCalledWith({
+  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  expect(JSON.parse(options?.body as string)).toEqual({
     id: 1,
     name: "Test task with a different name",
     roomId: 1,
@@ -190,11 +191,12 @@ test("Delete task", async () => {
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
   // expect(Router.asPath).toBe("/startingPath");
-  expect(mockDeleteTask).toBeCalledTimes(0);
+  expect(mockDeleteTaskRequest.called("/api/deleteTask/1")).toBe(false);
 
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
-  expect(mockDeleteTask).toBeCalledTimes(1);
+
+  expect(mockDeleteTaskRequest.called("/api/deleteTask/1")).toBe(true);
 
   // TODO
   // expect(Router.asPath).toBe("faker.org");
