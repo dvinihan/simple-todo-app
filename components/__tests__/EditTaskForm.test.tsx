@@ -40,6 +40,9 @@ fetchMock.get("/api/rooms", {
 const mockSaveTaskRequest = fetchMock.post("/api/saveTask", {});
 const mockDeleteTaskRequest = fetchMock.delete("/api/deleteTask/1", {});
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
 test("Save new task", async () => {
   jest
     .useFakeTimers({
@@ -96,8 +99,7 @@ test("Save new task", async () => {
     lastDone: new Date("11/23/2022").getTime(),
   });
 
-  // TODO
-  // expect(Router.asPath).toBe("/fakeorigin");
+  expect(mockPush).toBeCalledWith("/fakeorigin");
 });
 test("Existing task", async () => {
   jest
@@ -164,8 +166,7 @@ test("Existing task", async () => {
     lastDone: new Date("11/14/2022").getTime(),
   });
 
-  // TODO
-  // expect(Router.asPath).toBe("fake.com");
+  expect(mockPush).toBeCalledWith("fake.com");
 });
 test("Delete task", async () => {
   jest
@@ -186,20 +187,18 @@ test("Delete task", async () => {
   renderWithQueryClient(
     <EditTaskForm initialTask={initialTask} pageOrigin="faker.org" />
   );
-  // Router.asPath = "/startingPath";
-  // expect(Router.asPath).toBe("/startingPath");
+
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
-  // expect(Router.asPath).toBe("/startingPath");
   expect(mockDeleteTaskRequest.called("/api/deleteTask/1")).toBe(false);
+  expect(mockPush).toBeCalledTimes(0);
 
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
 
   expect(mockDeleteTaskRequest.called("/api/deleteTask/1")).toBe(true);
 
-  // TODO
-  // expect(Router.asPath).toBe("faker.org");
+  expect(mockPush).toBeCalledWith("faker.org");
 });
 test("Save task error", async () => {
   const initialTask = new Task({ id: 1 });
