@@ -36,20 +36,15 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
 
-  const redirectToOrigin = () => {
-    router.push(pageOrigin);
-  };
-
   const { mutate: saveTask } = useSaveTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      redirectToOrigin();
     },
   });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
       queryClient.invalidateQueries(TASKS_QUERY_KEY);
-      redirectToOrigin();
+      router.push(pageOrigin);
     },
   });
 
@@ -60,8 +55,8 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [hasChanges, setHasChanges] = useState(false);
   const [discardModalState, setDiscardModalState] = useState<{
     open: boolean;
-    redirectUrl?: string;
-  }>({ open: false, redirectUrl: undefined });
+    redirectUrl: string;
+  }>({ open: false, redirectUrl: "" });
 
   const [errors, setErrors] = useState<{
     name?: string;
@@ -178,10 +173,19 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
 
         <ActionButton
           color="success"
-          onClick={() => save({ ...task, lastDone: new Date() })}
+          onClick={() => {
+            save({ ...task, lastDone: new Date() });
+            router.push(pageOrigin);
+          }}
           text="Just did it!"
         />
-        <ActionButton onClick={() => save(task)} text="Save" />
+        <ActionButton
+          onClick={() => {
+            save(task);
+            router.push(pageOrigin);
+          }}
+          text="Save"
+        />
       </Container>
 
       <PickerModal
@@ -219,9 +223,14 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
       />
 
       <ActionModal
-        onClose={() => setDiscardModalState({ open: false })}
-        onConfirm={() => save(task)}
-        onDeny={() => redirectToOrigin()}
+        onClose={() => setDiscardModalState({ open: false, redirectUrl: "" })}
+        onConfirm={() => {
+          save(task);
+          router.push(discardModalState.redirectUrl);
+        }}
+        onDeny={() => {
+          router.push(discardModalState.redirectUrl);
+        }}
         open={discardModalState.open}
         title="Save changes?"
       />

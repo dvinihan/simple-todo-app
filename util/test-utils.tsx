@@ -8,9 +8,3 @@ export const renderWithQueryClient = (jsx: ReactNode) => {
     <QueryClientProvider client={queryClient}>{jsx}</QueryClientProvider>
   );
 };
-
-export const callMutationOptionFunctions = (mutationOptions: object) => {
-  Object.values(mutationOptions).forEach((a: any) => {
-    if (typeof a === "function") a();
-  });
-};

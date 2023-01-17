@@ -26,7 +26,9 @@ export class Task {
     this.id = props?.id ?? NULL_TASK_ID;
     this.frequencyAmount = props?.frequencyAmount ?? 0;
     this.frequencyType = props?.frequencyType ?? Frequency.WEEKS;
-    this.lastDone = props?.lastDone ? new Date(props.lastDone) : new Date();
+    this.lastDone = props?.lastDone
+      ? new Date(props.lastDone).getTime()
+      : new Date().getTime();
     this.name = props?.name ?? "";
     this.roomId = props?.roomId ?? NULL_ROOM_ID;
   }

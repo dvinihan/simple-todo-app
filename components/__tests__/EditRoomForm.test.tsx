@@ -1,14 +1,20 @@
 import { Room } from "../../types";
 import { renderWithQueryClient } from "../../util/test-utils";
 import { EditRoomForm } from "../EditRoomForm";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
 import fetchMock from "fetch-mock";
 
+type BeforePopStateCallback = ({ url }: { url: string }) => void;
+let beforePopState: BeforePopStateCallback;
 const user = userEvent.setup();
 const mockPush = jest.fn();
-const mockBeforePopState = jest.fn();
+const mockBeforePopState = jest
+  .fn()
+  .mockImplementation((callback: BeforePopStateCallback) => {
+    beforePopState = callback;
+  });
 
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
 (useRouter as jest.Mock).mockImplementation(() => ({
@@ -16,10 +22,14 @@ const useRouter = jest.spyOn(require("next/router"), "useRouter");
   beforePopState: mockBeforePopState,
 }));
 
-it("Save new room", async () => {
-  const saveRoomUrl = "/api/saveRoom";
-  const mockRequest = fetchMock.post(saveRoomUrl, { body: {} });
+const mockSaveRoomRequest = fetchMock.post("/api/saveRoom", {});
+const mockDeleteRoomRequest = fetchMock.delete("/api/deleteRoom/1", {});
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  fetchMock.resetHistory();
+});
+test("Save new room", async () => {
   const initialRoom = new Room({ id: 3 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -29,7 +39,7 @@ it("Save new room", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  const [_, options] = mockRequest.lastCall(saveRoomUrl) ?? [];
+  const [_, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
   expect(options?.body).toEqual(
     JSON.stringify({
       id: 3,
@@ -39,7 +49,7 @@ it("Save new room", async () => {
 
   expect(mockPush).toBeCalledWith(`${TASKS_ROUTE}?roomId=3`);
 });
-it("Existing room", async () => {
+test("Existing room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   const nameInput = screen.getByLabelText("Name");
@@ -49,29 +59,58 @@ it("Existing room", async () => {
     "Test room with a different name"
   );
 });
-it("Delete room", async () => {
-  const deleteRoomUrl = "/api/deleteRoom/1";
-  const mockRequest = fetchMock.delete(deleteRoomUrl, { body: {} });
-
+test("Delete room", async () => {
   const initialRoom = new Room({ id: 1, name: "Test room" });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("No"));
 
-  expect(mockRequest.called(deleteRoomUrl)).toBe(false);
+  expect(mockDeleteRoomRequest.called("/api/deleteRoom/1")).toBe(false);
 
   await user.click(screen.getByTestId("DeleteIcon"));
   await user.click(screen.getByText("Yes"));
 
-  expect(mockRequest.called(deleteRoomUrl)).toBe(true);
+  expect(mockDeleteRoomRequest.called("/api/deleteRoom/1")).toBe(true);
 
   expect(mockPush).toBeCalledWith("/");
 });
-it("Save room error", async () => {
+test("Save room error", async () => {
   const initialRoom = new Room({ id: 1 });
   renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
   expect(screen.getByLabelText("Name")).toHaveValue("");
 
   await user.click(screen.getByText("Save"));
   expect(screen.getByText("You must enter a room name")).toBeVisible();
+});
+test("Discard modal - save changes", async () => {
+  const initialRoom = new Room({ id: 1 });
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+
+  await user.type(screen.getByLabelText("Name"), "test room");
+  act(() => {
+    beforePopState({ url: "/test/url" });
+  });
+  expect(screen.getByText("Save changes?")).toBeVisible();
+  await user.click(screen.getByText("Yes"));
+
+  const [_, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
+  expect(JSON.parse(options?.body as string)).toEqual({
+    id: 1,
+    name: "test room",
+  });
+  expect(mockPush).toBeCalledWith("/test/url");
+});
+test("Discard modal - don't save changes", async () => {
+  const initialRoom = new Room({ id: 1 });
+  renderWithQueryClient(<EditRoomForm initialRoom={initialRoom} />);
+
+  await user.type(screen.getByLabelText("Name"), "test room");
+  act(() => {
+    beforePopState({ url: "/test/url" });
+  });
+  expect(screen.getByText("Save changes?")).toBeVisible();
+  await user.click(screen.getByText("No"));
+
+  expect(mockSaveRoomRequest.called()).toBe(false);
+  expect(mockPush).toBeCalledWith("/test/url");
 });

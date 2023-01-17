@@ -1,14 +1,20 @@
 import { Task } from "../../types";
 import { renderWithQueryClient } from "../../util/test-utils";
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditTaskForm from "../EditTaskForm";
 import { Frequency } from "../../constants";
 import fetchMock from "fetch-mock";
 
-const mockPush = jest.fn();
-const mockBeforePopState = jest.fn();
+type BeforePopStateCallback = ({ url }: { url: string }) => void;
+let beforePopState: BeforePopStateCallback;
 const user = userEvent.setup();
+const mockPush = jest.fn();
+const mockBeforePopState = jest
+  .fn()
+  .mockImplementation((callback: BeforePopStateCallback) => {
+    beforePopState = callback;
+  });
 
 const useRouter = jest.spyOn(require("next/router"), "useRouter");
 (useRouter as jest.Mock).mockImplementation(() => ({
@@ -42,6 +48,7 @@ const mockDeleteTaskRequest = fetchMock.delete("/api/deleteTask/1", {});
 
 beforeEach(() => {
   jest.clearAllMocks();
+  fetchMock.resetHistory();
 });
 test("Save new task", async () => {
   jest
@@ -209,4 +216,72 @@ test("Save task error", async () => {
 
   await user.click(screen.getByText("Save"));
   expect(screen.getByText("You must enter a task name")).toBeVisible();
+});
+test("Discard changes - save", async () => {
+  jest
+    .useFakeTimers({
+      doNotFake: ["setTimeout"],
+    })
+    .setSystemTime(new Date("11/17/2022"));
+
+  const initialTask = new Task({
+    id: 1,
+    name: "Test task",
+    frequencyAmount: 4,
+    frequencyType: Frequency.DAYS,
+    lastDone: new Date("10/1/2022").getTime(),
+    roomId: 0,
+  });
+  renderWithQueryClient(
+    <EditTaskForm initialTask={initialTask} pageOrigin="fake.com" />
+  );
+  await user.type(screen.getByLabelText("Name"), " with a different name");
+
+  act(() => {
+    beforePopState({ url: "fake/url" });
+  });
+
+  expect(screen.getByText("Save changes?"));
+  await user.click(screen.getByText("Yes"));
+
+  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  expect(JSON.parse(options?.body as string)).toEqual({
+    id: 1,
+    name: "Test task with a different name",
+    roomId: 0,
+    frequencyAmount: 4,
+    frequencyType: "days",
+    lastDone: new Date("10/1/2022").getTime(),
+  });
+  expect(mockPush).toBeCalledWith("fake/url");
+});
+test("Discard changes - don't save", async () => {
+  jest
+    .useFakeTimers({
+      doNotFake: ["setTimeout"],
+    })
+    .setSystemTime(new Date("11/17/2022"));
+
+  const initialTask = new Task({
+    id: 1,
+    name: "Test task",
+    frequencyAmount: 4,
+    frequencyType: Frequency.DAYS,
+    lastDone: new Date("10/1/2022").getTime(),
+    roomId: 0,
+  });
+  renderWithQueryClient(
+    <EditTaskForm initialTask={initialTask} pageOrigin="fake.com" />
+  );
+  await user.type(screen.getByLabelText("Name"), " with a different name");
+
+  act(() => {
+    beforePopState({ url: "fake/url" });
+  });
+
+  expect(screen.getByText("Save changes?"));
+  await user.click(screen.getByText("No"));
+
+  expect(mockSaveTaskRequest.called("/api/saveTask")).toBe(false);
+  expect(mockPush).toBeCalledWith("fake/url");
 });

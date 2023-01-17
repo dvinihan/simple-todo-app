@@ -33,12 +33,8 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
   const [discardModalState, setDiscardModalState] = useState<{
     open: boolean;
-    redirectUrl?: string;
-  }>({ open: false, redirectUrl: undefined });
-
-  const redirectToTaskList = () => {
-    router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
-  };
+    redirectUrl: string;
+  }>({ open: false, redirectUrl: "" });
 
   useEffect(() => {
     router.beforePopState(({ url }) => {
@@ -53,7 +49,6 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
   const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
     onSettled: () => {
       queryClient.invalidateQueries(ROOMS_QUERY_KEY);
-      redirectToTaskList();
     },
   });
   const { mutate: doDelete } = useDeleteRoom({
@@ -90,7 +85,13 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
             {errors.name}
           </Alert>
         )}
-        <ActionButton onClick={save} text="Save" />
+        <ActionButton
+          onClick={() => {
+            save();
+            router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
+          }}
+          text="Save"
+        />
       </Container>
 
       <Modal open={isLoadingSaveRoom}>
@@ -113,9 +114,14 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
       />
 
       <ActionModal
-        onClose={() => setDiscardModalState({ open: false })}
-        onConfirm={save}
-        onDeny={() => redirectToTaskList()}
+        onClose={() => setDiscardModalState({ open: false, redirectUrl: "" })}
+        onConfirm={() => {
+          save();
+          router.push(discardModalState.redirectUrl);
+        }}
+        onDeny={() => {
+          router.push(discardModalState.redirectUrl);
+        }}
         open={discardModalState.open}
         title="Save changes?"
       />
