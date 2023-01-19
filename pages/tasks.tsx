@@ -4,10 +4,10 @@ import {
   HOME_ROUTE,
   NEW_TASK_ROUTE,
 } from "../constants";
-import { useTasksQuery } from "../hooks/useTasks";
+import { useTasksQuery } from "../queries/useTasks";
 import { Box, Fab } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
-import { useRoomsQuery } from "../hooks/useRooms";
+import { useRoomsQuery } from "../queries/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import Link from "next/link";
 import { ListItem } from "../components/ListItem";

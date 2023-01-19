@@ -23,7 +23,7 @@ export const useRoomsQuery = (
   };
 };
 
-export const getRooms = (): Promise<RoomsResponse> =>
+const getRooms = (): Promise<RoomsResponse> =>
   fetch(`/api/rooms`)
     .then((res) => res.json())
     .then((data) => ({ ...data, rooms: sanitizeRoomsData(data.rooms) }));

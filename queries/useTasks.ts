@@ -23,7 +23,7 @@ export const useTasksQuery = (
   };
 };
 
-export const getTasks = (): Promise<TasksResponse> =>
+const getTasks = (): Promise<TasksResponse> =>
   fetch(`/api/tasks`)
     .then((res) => res.json())
     .then((data) => ({ ...data, tasks: sanitizeTasksData(data.tasks) }));

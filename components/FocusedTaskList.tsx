@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { EDIT_TASK_ROUTE } from "../constants";
 import { getDaysUntilDue } from "../helpers/getDaysUntilDue";
 import { getFrequencyInDays } from "../helpers/getFrequencyInDays";
-import { useRoomsQuery } from "../hooks/useRooms";
-import { useTasksQuery } from "../hooks/useTasks";
+import { useRoomsQuery } from "../queries/useRooms";
+import { useTasksQuery } from "../queries/useTasks";
 import { TaskWithDaysUntilDue } from "../types";
 
 type Props = {

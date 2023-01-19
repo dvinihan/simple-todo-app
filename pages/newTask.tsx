@@ -4,7 +4,7 @@ import { useIdParams } from "../hooks/useIdParams";
 import EditTaskForm from "../components/EditTaskForm";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
-import { useTasksQuery } from "../hooks/useTasks";
+import { useTasksQuery } from "../queries/useTasks";
 import { NavBar } from "../components/NavBar";
 import { useOriginParam } from "../hooks/useOriginParam";
 

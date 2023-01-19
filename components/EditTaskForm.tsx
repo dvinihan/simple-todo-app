@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "react-query";
 import { Frequency, TASKS_QUERY_KEY } from "../constants";
-import { useRoomsQuery } from "../hooks/useRooms";
-import { useSaveTask } from "../hooks/useSaveTask";
+import { useRoomsQuery } from "../queries/useRooms";
+import { useSaveTask } from "../queries/useSaveTask";
 import { Task } from "../types";
-import { useDeleteTask } from "../hooks/useDeleteTask";
+import { useDeleteTask } from "../queries/useDeleteTask";
 import { useRouter } from "next/router";
 import {
   Alert,

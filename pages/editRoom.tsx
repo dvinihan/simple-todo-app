@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRoomsQuery } from "../hooks/useRooms";
+import { useRoomsQuery } from "../queries/useRooms";
 import { Room } from "../types";
 import { useRouter } from "next/router";
 import { useIdParams } from "../hooks/useIdParams";

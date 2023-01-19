@@ -2,7 +2,7 @@ import { Room } from "../types";
 import { useRouter } from "next/router";
 import { LoadingPage } from "../components/LoadingPage";
 import { EditRoomForm } from "../components/EditRoomForm";
-import { useRoomsQuery } from "../hooks/useRooms";
+import { useRoomsQuery } from "../queries/useRooms";
 import { NavBar } from "../components/NavBar";
 import { HOME_ROUTE } from "../constants";
 

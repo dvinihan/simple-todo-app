@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
 import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
-import { useDeleteRoom } from "../hooks/useDeleteRoom";
-import { useSaveRoom } from "../hooks/useSaveRoom";
+import { useDeleteRoom } from "../queries/useDeleteRoom";
+import { useSaveRoom } from "../queries/useSaveRoom";
 import { Room } from "../types";
 import { useRouter } from "next/router";
 import {

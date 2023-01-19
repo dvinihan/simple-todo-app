@@ -1,4 +1,4 @@
-import { useTasksQuery } from "../hooks/useTasks";
+import { useTasksQuery } from "../queries/useTasks";
 import { Task } from "../types";
 import { LoadingPage } from "../components/LoadingPage";
 import { useIdParams } from "../hooks/useIdParams";

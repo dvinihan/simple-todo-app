@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Box, Fab } from "@mui/material";
 import { NEW_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
-import { useRoomsQuery } from "../hooks/useRooms";
+import { useRoomsQuery } from "../queries/useRooms";
 import { FocusedTaskList } from "../components/FocusedTaskList";
 import { ListItem } from "../components/ListItem";
 import Link from "next/link";
