@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { renderWithQueryClient } from "../../util/test-utils";
 import { ListItem } from "../ListItem";
 
-jest.mock("next/router", () => require("next-router-mock"));
 jest.mock("next/link", () => {
   const MockNextLink = ({ children }: { children: ReactNode }) => (
     <>{children}</>
