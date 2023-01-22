@@ -7,7 +7,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
-    const roomIdString = getParamValue(req.query["roomId"]);
+    const roomIdString = getParamValue(req.query["id"]);
     const roomId =
       roomIdString === undefined ? undefined : Number(roomIdString);
 

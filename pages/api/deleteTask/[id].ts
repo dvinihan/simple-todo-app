@@ -7,7 +7,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
-    const taskIdString = getParamValue(req.query["taskId"]);
+    const taskIdString = getParamValue(req.query["id"]);
     const taskId =
       taskIdString === undefined ? undefined : Number(taskIdString);
 

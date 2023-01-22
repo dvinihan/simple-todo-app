@@ -8,9 +8,9 @@ import { HOME_ROUTE } from "../constants";
 
 const NewRoom = () => {
   const router = useRouter();
-  const { nextId } = useRoomsQuery();
+  const { nextId, isFetched } = useRoomsQuery();
 
-  if (!router.isReady) {
+  if (!router.isReady || !isFetched) {
     return <LoadingPage />;
   }
 

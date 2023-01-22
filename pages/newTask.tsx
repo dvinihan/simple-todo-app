@@ -11,10 +11,10 @@ import { useOriginParam } from "../hooks/useOriginParam";
 const NewTask = () => {
   const router = useRouter();
   const { roomId } = useIdParams();
-  const { nextId } = useTasksQuery();
+  const { nextId, isFetched } = useTasksQuery();
   const pageOrigin = useOriginParam();
 
-  if (!router.isReady) {
+  if (!router.isReady || !isFetched) {
     return <LoadingPage />;
   }
 
