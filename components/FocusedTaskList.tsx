@@ -3,11 +3,9 @@ import { formatDuration } from "date-fns";
 import Link from "next/link";
 import { useMemo } from "react";
 import { EDIT_TASK_ROUTE } from "../constants";
-import { getDaysUntilDue } from "../helpers/getDaysUntilDue";
-import { getFrequencyInDays } from "../helpers/getFrequencyInDays";
+import { prepareTaskList } from "../helpers/prepareTaskList";
 import { useRoomsQuery } from "../queries/useRooms";
 import { useTasksQuery } from "../queries/useTasks";
-import { TaskWithDaysUntilDue } from "../types";
 
 type Props = {
   type: "upcoming" | "overdue";
@@ -18,29 +16,12 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
 
-  const tasksWithDaysUntilDue: TaskWithDaysUntilDue[] = tasks
-    .filter((t) => (roomId === undefined ? true : t.roomId === roomId))
-    .map((t) => ({
-      ...t,
-      daysUntilDue: getDaysUntilDue(t),
-    }));
-
-  const filter = useMemo(
-    () =>
-      type === "upcoming"
-        ? (t: TaskWithDaysUntilDue) =>
-            t.daysUntilDue > 0 &&
-            t.daysUntilDue <
-              getFrequencyInDays(t.frequencyType, t.frequencyAmount) * 0.1
-        : (t: TaskWithDaysUntilDue) => t.daysUntilDue <= 0,
-    [type]
-  );
-  const qualifyingTasks = tasksWithDaysUntilDue.filter(filter);
-  const sortedTasks = qualifyingTasks.sort(
-    (a, b) => a.daysUntilDue - b.daysUntilDue
+  const preparedTaskList = useMemo(
+    () => prepareTaskList(type, tasks, roomId),
+    [roomId, tasks, type]
   );
 
-  return qualifyingTasks.length > 0 ? (
+  return preparedTaskList.length > 0 ? (
     <Card
       sx={{
         marginTop: "10px",
@@ -51,7 +32,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
       <Typography fontSize={22}>
         {type === "upcoming" ? "Upcoming" : "Overdue"} tasks
       </Typography>
-      {sortedTasks.map((task) => {
+      {preparedTaskList.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
           <Link
