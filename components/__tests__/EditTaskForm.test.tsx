@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import EditTaskForm from "../EditTaskForm";
 import { Frequency } from "../../constants";
 import fetchMock from "fetch-mock";
+import * as router from "next/router";
 
 type BeforePopStateCallback = ({ url }: { url: string }) => void;
 let beforePopState: BeforePopStateCallback;
@@ -16,7 +17,7 @@ const mockBeforePopState = jest
     beforePopState = callback;
   });
 
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
+const useRouter = jest.spyOn(router, "useRouter");
 (useRouter as jest.Mock).mockImplementation(() => ({
   push: mockPush,
   beforePopState: mockBeforePopState,
@@ -96,7 +97,7 @@ test("Save new task", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  const [, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
   expect(JSON.parse(options?.body as string)).toEqual({
     id: 3,
     name: "a new task name",
@@ -163,7 +164,7 @@ test("Existing task", async () => {
   expect(screen.getByDisplayValue("11/14/2022")).toBeVisible();
 
   await user.click(screen.getByText("Save"));
-  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  const [, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
   expect(JSON.parse(options?.body as string)).toEqual({
     id: 1,
     name: "Test task with a different name",
@@ -244,7 +245,7 @@ test("Discard changes - save", async () => {
   expect(screen.getByText("Save changes?"));
   await user.click(screen.getByText("Yes"));
 
-  const [_, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
+  const [, options] = mockSaveTaskRequest.lastCall("/api/saveTask") ?? [];
   expect(JSON.parse(options?.body as string)).toEqual({
     id: 1,
     name: "Test task with a different name",

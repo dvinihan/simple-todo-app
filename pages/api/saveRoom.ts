@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getErrorMessage } from "../../helpers/getErrorMessage";
 import clientPromise from "../../util/mongodb";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const saveRoom = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
@@ -11,7 +12,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .collection("rooms")
       .updateOne({ id }, { $set: req.body }, { upsert: true });
     res.send(data);
-  } catch (err: any) {
-    res.status(500).send({ message: err.message });
+  } catch (err) {
+    res.status(500).send({ message: getErrorMessage(err) });
   }
 };
+
+export default saveRoom;

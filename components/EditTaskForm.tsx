@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { useQueryClient } from "react-query";
-import { Frequency, TASKS_QUERY_KEY } from "../constants";
+import { useMemo, useState } from "react";
+import { Frequency } from "../constants";
 import { useRoomsQuery } from "../queries/useRooms";
 import { useSaveTask } from "../queries/useSaveTask";
 import { Task } from "../types";
@@ -19,9 +18,12 @@ import {
 import { Delete } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import { ActionButton } from "../components/ActionButton";
-import { ActionModal } from "../components/ActionModal";
 import { PickerModal } from "../components/PickerModal";
 import "react-datepicker/dist/react-datepicker.css";
+import { DiscardModal } from "./DiscardModal";
+import { useAppContext } from "../context/use-app-context";
+import { useTasksQuery } from "../queries/useTasks";
+import { DeleteModal } from "./DeleteModal";
 
 type Props = {
   initialTask: Task;
@@ -30,20 +32,20 @@ type Props = {
 
 const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [task, setTask] = useState(initialTask);
+  const { setHasChanges } = useAppContext();
 
   const router = useRouter();
 
-  const queryClient = useQueryClient();
   const { rooms } = useRoomsQuery();
+  const { refetch: refetchTasks } = useTasksQuery();
 
   const { mutate: saveTask } = useSaveTask({
     onSuccess: () => {
-      queryClient.invalidateQueries(TASKS_QUERY_KEY);
+      refetchTasks();
     },
   });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
-      queryClient.invalidateQueries(TASKS_QUERY_KEY);
       router.push(pageOrigin);
     },
   });
@@ -52,25 +54,9 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [isFreqDialogVisible, setIsFreqDialogVisible] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
-  const [hasChanges, setHasChanges] = useState(false);
-  const [discardModalState, setDiscardModalState] = useState<{
-    open: boolean;
-    redirectUrl: string;
-  }>({ open: false, redirectUrl: "" });
-
   const [errors, setErrors] = useState<{
     name?: string;
   }>({});
-
-  useEffect(() => {
-    router.beforePopState(({ url }) => {
-      if (hasChanges) {
-        setDiscardModalState({ open: true, redirectUrl: url });
-        return false;
-      }
-      return true;
-    });
-  }, [hasChanges, router]);
 
   const onSelectRoom = (roomName: string) => {
     const room = rooms.find((r) => r.name === roomName);
@@ -84,6 +70,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const onSelectFrequency = (frequency: Frequency) => {
     setTask((t) => ({ ...t, frequencyType: frequency }));
     setIsFreqDialogVisible(false);
+    setHasChanges(true);
   };
 
   const onChangeDate = (date: Date) => {
@@ -214,26 +201,14 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         <Delete />
       </Fab>
 
-      <ActionModal
+      <DeleteModal
         onClose={() => setShouldShowDeleteModal(false)}
-        onConfirm={() => doDelete(task.id)}
-        onDeny={() => setShouldShowDeleteModal(false)}
+        onDelete={() => doDelete(task.id)}
         open={shouldShowDeleteModal}
         title="Are you sure you want to delete this task?"
       />
 
-      <ActionModal
-        onClose={() => setDiscardModalState({ open: false, redirectUrl: "" })}
-        onConfirm={() => {
-          save(task);
-          router.push(discardModalState.redirectUrl);
-        }}
-        onDeny={() => {
-          router.push(discardModalState.redirectUrl);
-        }}
-        open={discardModalState.open}
-        title="Save changes?"
-      />
+      <DiscardModal onSave={() => save(task)} />
     </>
   );
 };

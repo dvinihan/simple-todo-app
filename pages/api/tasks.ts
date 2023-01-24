@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getErrorMessage } from "../../helpers/getErrorMessage";
 import { Task } from "../../types";
 import clientPromise from "../../util/mongodb";
 
@@ -7,7 +8,7 @@ export type TasksApiResponse = {
   nextId: number;
 };
 
-export default async (
+const tasks = async (
   req: NextApiRequest,
   res: NextApiResponse<TasksApiResponse | Error>
 ) => {
@@ -24,7 +25,11 @@ export default async (
       -1
     );
     res.send({ tasks: data, nextId: highestId + 1 });
-  } catch (err: any) {
-    res.status(500).send({ name: "tasks error", message: err.message });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ name: "tasks error", message: getErrorMessage(err) });
   }
 };
+
+export default tasks;

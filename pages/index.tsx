@@ -29,17 +29,17 @@ const Home = () => {
           />
         ))}
       </Box>
-      <Fab
-        sx={{
-          position: "fixed",
-          bottom: "16px",
-          right: "16px",
-        }}
-      >
-        <Link href={`${NEW_ROOM_ROUTE}?origin=${window.location.href}`}>
+      <Link href={`${NEW_ROOM_ROUTE}?origin=${window.location.href}`}>
+        <Fab
+          sx={{
+            position: "fixed",
+            bottom: "16px",
+            right: "16px",
+          }}
+        >
           <Add />
-        </Link>
-      </Fab>
+        </Fab>
+      </Link>
     </>
   );
 };

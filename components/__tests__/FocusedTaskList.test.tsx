@@ -3,7 +3,6 @@ import { Frequency } from "../../constants";
 import { renderWithQueryClient } from "../../util/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import fetchMock from "fetch-mock";
-import { ReactNode } from "react";
 
 const mockRoomsResponse = {
   nextId: 4,

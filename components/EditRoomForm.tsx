@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
-import { ROOMS_QUERY_KEY, HOME_ROUTE, TASKS_ROUTE } from "../constants";
+import { useState } from "react";
+import { HOME_ROUTE, TASKS_ROUTE } from "../constants";
 import { useDeleteRoom } from "../queries/useDeleteRoom";
 import { useSaveRoom } from "../queries/useSaveRoom";
 import { Room } from "../types";
@@ -15,7 +14,10 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import { ActionButton } from "../components/ActionButton";
-import { ActionModal } from "../components/ActionModal";
+import { useAppContext } from "../context/use-app-context";
+import { DiscardModal } from "./DiscardModal";
+import { DeleteModal } from "./DeleteModal";
+import { useRoomsQuery } from "../queries/useRooms";
 
 type Props = {
   initialRoom: Room;
@@ -23,42 +25,27 @@ type Props = {
 
 export const EditRoomForm = ({ initialRoom }: Props) => {
   const [room, setRoom] = useState(initialRoom);
+  const { setHasChanges } = useAppContext();
+  const { refetch: refetchRooms } = useRoomsQuery();
 
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   const [errors, setErrors] = useState<{ name?: string }>({});
 
-  const [hasChanges, setHasChanges] = useState(false);
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
-  const [discardModalState, setDiscardModalState] = useState<{
-    open: boolean;
-    redirectUrl: string;
-  }>({ open: false, redirectUrl: "" });
-
-  useEffect(() => {
-    router.beforePopState(({ url }) => {
-      if (hasChanges) {
-        setDiscardModalState({ open: true, redirectUrl: url });
-        return false;
-      }
-      return true;
-    });
-  }, [hasChanges, router]);
 
   const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
-    onSettled: () => {
-      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
+    onSuccess: () => {
+      refetchRooms();
     },
   });
   const { mutate: doDelete } = useDeleteRoom({
-    onSettled: () => {
-      queryClient.invalidateQueries(ROOMS_QUERY_KEY);
+    onSuccess: () => {
       router.push(HOME_ROUTE);
     },
   });
 
-  const save = async () => {
+  const save = () => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
@@ -105,26 +92,14 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
         <Delete />
       </Fab>
 
-      <ActionModal
+      <DeleteModal
         onClose={() => setShouldShowDeleteModal(false)}
-        onConfirm={() => doDelete(room.id)}
-        onDeny={() => setShouldShowDeleteModal(false)}
+        onDelete={() => doDelete(room.id)}
         open={shouldShowDeleteModal}
         title="Are you sure you want to delete this room?"
       />
 
-      <ActionModal
-        onClose={() => setDiscardModalState({ open: false, redirectUrl: "" })}
-        onConfirm={() => {
-          save();
-          router.push(discardModalState.redirectUrl);
-        }}
-        onDeny={() => {
-          router.push(discardModalState.redirectUrl);
-        }}
-        open={discardModalState.open}
-        title="Save changes?"
-      />
+      <DiscardModal onSave={save} />
     </>
   );
 };

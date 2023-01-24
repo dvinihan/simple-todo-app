@@ -53,20 +53,20 @@ const Tasks = () => {
           />
         ))}
       </Box>
-      <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
-        <Link
-          href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
-        >
+      <Link
+        href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
+      >
+        <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
           <Edit />
-        </Link>
-      </Fab>
-      <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
-        <Link
-          href={`${NEW_TASK_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
-        >
+        </Fab>
+      </Link>
+      <Link
+        href={`${NEW_TASK_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
+      >
+        <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
           <Add />
-        </Link>
-      </Fab>
+        </Fab>
+      </Link>
     </>
   );
 };

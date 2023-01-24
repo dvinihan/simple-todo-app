@@ -5,6 +5,7 @@ import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TASKS_ROUTE } from "../../constants";
 import fetchMock from "fetch-mock";
+import * as router from "next/router";
 
 type BeforePopStateCallback = ({ url }: { url: string }) => void;
 let beforePopState: BeforePopStateCallback;
@@ -16,7 +17,7 @@ const mockBeforePopState = jest
     beforePopState = callback;
   });
 
-const useRouter = jest.spyOn(require("next/router"), "useRouter");
+const useRouter = jest.spyOn(router, "useRouter");
 (useRouter as jest.Mock).mockImplementation(() => ({
   push: mockPush,
   beforePopState: mockBeforePopState,
@@ -39,7 +40,7 @@ test("Save new room", async () => {
 
   await user.click(screen.getByText("Save"));
 
-  const [_, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
+  const [, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
   expect(options?.body).toEqual(
     JSON.stringify({
       id: 3,
@@ -93,7 +94,7 @@ test("Discard modal - save changes", async () => {
   expect(screen.getByText("Save changes?")).toBeVisible();
   await user.click(screen.getByText("Yes"));
 
-  const [_, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
+  const [, options] = mockSaveRoomRequest.lastCall("/api/saveRoom") ?? [];
   expect(JSON.parse(options?.body as string)).toEqual({
     id: 1,
     name: "test room",

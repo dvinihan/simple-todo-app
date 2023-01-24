@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getErrorMessage } from "../../helpers/getErrorMessage";
 import { Room } from "../../types";
 import clientPromise from "../../util/mongodb";
 
@@ -7,7 +8,7 @@ type RoomsApiResponse = {
   nextId: number;
 };
 
-export default async (
+const rooms = async (
   req: NextApiRequest,
   res: NextApiResponse<RoomsApiResponse | Error>
 ) => {
@@ -24,7 +25,11 @@ export default async (
       -1
     );
     res.send({ rooms: data, nextId: highestId + 1 });
-  } catch (err: any) {
-    res.status(500).send({ name: "rooms error", message: err.message });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ name: "rooms error", message: getErrorMessage(err) });
   }
 };
+
+export default rooms;

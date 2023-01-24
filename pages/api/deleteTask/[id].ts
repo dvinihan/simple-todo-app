@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getErrorMessage } from "../../../helpers/getErrorMessage";
 import { getParamValue } from "../../../helpers/getParamValue";
 import { Task } from "../../../types";
 import clientPromise from "../../../util/mongodb";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const deleteTask = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
@@ -16,7 +17,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .collection<Task>("tasks")
       .deleteOne({ id: taskId });
     res.send(data);
-  } catch (err: any) {
-    res.status(500).send({ message: err.message });
+  } catch (err) {
+    res.status(500).send({ message: getErrorMessage(err) });
   }
 };
+
+export default deleteTask;
