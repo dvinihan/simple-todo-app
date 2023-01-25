@@ -39,10 +39,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
             key={task.id}
           >
-            <a
-              data-testid={`task-${task.name}`}
-              style={{ textDecoration: "none" }}
-            >
+            <a data-testid={`task-link`} style={{ textDecoration: "none" }}>
               <Card sx={{ padding: "6px", marginTop: "10px" }}>
                 <Typography>
                   <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}

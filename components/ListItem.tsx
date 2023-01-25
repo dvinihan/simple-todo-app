@@ -2,12 +2,13 @@ import { Card, Typography } from "@mui/material";
 import Link from "next/link";
 
 type Props = {
+  dataTestId?: string;
   href: string;
   onClick?: () => void;
   text: string;
 };
 
-export const ListItem = ({ href, onClick, text }: Props) => {
+export const ListItem = ({ dataTestId = "", href, onClick, text }: Props) => {
   return (
     <Card
       sx={{
@@ -17,9 +18,14 @@ export const ListItem = ({ href, onClick, text }: Props) => {
       variant="outlined"
     >
       <Link href={href}>
-        <Typography fontSize={"24px"} onClick={onClick}>
-          {text}
-        </Typography>
+        <a
+          data-testid={dataTestId}
+          style={{ color: "black", textDecoration: "none" }}
+        >
+          <Typography fontSize={"24px"} onClick={onClick}>
+            {text}
+          </Typography>
+        </a>
       </Link>
     </Card>
   );
