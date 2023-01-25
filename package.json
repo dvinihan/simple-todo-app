@@ -9,7 +9,8 @@
     "lint": "next lint",
     "tsc": "tsc",
     "test": "jest --watch",
-    "test:cypress": "yarn start & wait-on http://localhost:3000 && cypress run && lsof -i tcp:3000 | grep LISTEN | awk '{print $2}' | xargs kill -9"
+    "cicd:cypress": "yarn cicd:deps && yarn start & wait-on http://localhost:3000 && cypress run && lsof -i tcp:3000 | grep LISTEN | awk '{print $2}' | xargs kill -9",
+    "cicd:deps": "apt-get install libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
@@ -45,7 +46,6 @@
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4",
     "wait-on": "^7.0.1",
-    "whatwg-fetch": "^3.6.2",
-    "xvfb": "^0.4.0"
+    "whatwg-fetch": "^3.6.2"
   }
 }
