@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: Deploy
 on: [push]
 jobs:
   cypress-run:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Vercel Deploy
-        uses: amondnet/vercel-action@v25
+        uses: amondnet/vercel-action@v25.1.1
         with:
           github-comment: false
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
