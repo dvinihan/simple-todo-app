@@ -2,6 +2,7 @@ import { mockRoomsResponse } from "../../fixtures/rooms";
 import { mockTasksResponse } from "../../fixtures/tasks";
 
 it("tasks and rooms are rendered correctly", () => {
+  cy.clock(new Date("11/17/22").getTime(), ["Date"]);
   cy.intercept("/api/rooms", mockRoomsResponse);
   cy.intercept("/api/tasks", mockTasksResponse);
   cy.visit("/");
@@ -14,10 +15,10 @@ it("tasks and rooms are rendered correctly", () => {
     )
     .then((text) => {
       expect(Object.values(text)).to.deep.equal([
-        "Do dishes in Family Room, 381 days overdue",
-        "Laundry in Living Room, 70 days overdue",
-        "clean baby in Living Room, 67 days overdue",
-        "Take out trash in Family Room, 64 days overdue",
+        "Do dishes in Family Room, 313 days overdue",
+        "Laundry in Living Room, 2 days overdue",
+        "clean baby in Living Room, due in 1 day",
+        "Take out trash in Family Room, due in 4 days",
       ]);
     });
   cy.get('[data-testid="room-link"]')
