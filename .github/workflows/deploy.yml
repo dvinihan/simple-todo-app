@@ -12,14 +12,16 @@ jobs:
         with:
           build: npm run build
           start: npm start
-  deploy:
+  vercel-deploy:
     needs: cypress-run
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Vercel Deploy
         uses: amondnet/vercel-action@v25.1.1
         with:
           github-comment: false
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID}}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}} 
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID}}
