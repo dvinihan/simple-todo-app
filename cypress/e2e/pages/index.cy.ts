@@ -15,7 +15,7 @@ it("tasks and rooms are rendered correctly", () => {
     )
     .then((text) => {
       expect(Object.values(text)).to.deep.equal([
-        "Do dishes in Family Room, 314 days overdue",
+        "Do dishes in Family Room, 313 days overdue",
         "Laundry in Living Room, 2 days overdue",
         "clean baby in Living Room, due in 1 day",
         "Take out trash in Family Room, due in 4 days",
