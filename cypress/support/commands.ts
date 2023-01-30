@@ -9,31 +9,26 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
 
-export {};
+import { mockRoomsResponse } from "../fixtures/rooms";
+import { mockTasksResponse } from "../fixtures/tasks";
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      resetDb(): Chainable<void>;
+      seedDb(): Chainable<void>;
+    }
+  }
+}
+
+Cypress.Commands.add("resetDb", () => {
+  cy.deleteMany({}, { collection: "rooms" });
+  cy.deleteMany({}, { collection: "tasks" });
+});
+
+Cypress.Commands.add("seedDb", () => {
+  cy.insertMany(mockRoomsResponse.rooms, { collection: "rooms" });
+  cy.insertMany(mockTasksResponse.tasks, { collection: "tasks" });
+});

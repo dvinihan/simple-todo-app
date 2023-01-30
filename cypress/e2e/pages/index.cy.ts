@@ -1,10 +1,8 @@
-import { mockRoomsResponse } from "../../fixtures/rooms";
-import { mockTasksResponse } from "../../fixtures/tasks";
-
 it("tasks and rooms are rendered correctly", () => {
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
-  cy.intercept("/api/rooms", mockRoomsResponse);
-  cy.intercept("/api/tasks", mockTasksResponse);
+  cy.resetDb();
+  cy.seedDb();
+
   cy.visit("/");
   cy.contains("Overdue tasks").should("be.visible");
   cy.get('[data-testid="task-link"]')
