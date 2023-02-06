@@ -1,3 +1,5 @@
+export {};
+
 it("tasks and rooms are rendered correctly", () => {
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
   cy.resetDb();
