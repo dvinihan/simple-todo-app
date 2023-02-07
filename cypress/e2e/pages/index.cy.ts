@@ -7,6 +7,7 @@ it("overdue and upcoming tasks", () => {
   cy.seedDb(mockRooms, mockTasks);
 
   cy.visit("/");
+  cy.contains("Rooms").should("be.visible");
   cy.contains("Overdue tasks").should("be.visible");
   cy.contains("Upcoming tasks").should("be.visible");
   cy.get('[data-testid="task-link"]')
@@ -40,6 +41,7 @@ it("only overdue tasks", () => {
   cy.seedDb(mockRooms, overdueTasks);
 
   cy.visit("/");
+  cy.contains("Rooms").should("be.visible");
   cy.contains("Overdue tasks").should("be.visible");
   cy.contains("Upcoming tasks").should("not.exist");
   cy.get('[data-testid="task-link"]')
@@ -71,6 +73,7 @@ it("only upcoming tasks", () => {
   cy.seedDb(mockRooms, upcomingTasks);
 
   cy.visit("/");
+  cy.contains("Rooms").should("be.visible");
   cy.contains("Overdue tasks").should("not.exist");
   cy.contains("Upcoming tasks").should("be.visible");
   cy.get('[data-testid="task-link"]')
@@ -102,6 +105,7 @@ it("no overdue or upcoming tasks", () => {
   cy.seedDb(mockRooms, []);
 
   cy.visit("/");
+  cy.contains("Rooms").should("be.visible");
   cy.contains("Overdue tasks").should("not.exist");
   cy.contains("Upcoming tasks").should("not.exist");
   cy.get('[data-testid="task-link"]').should("not.exist");

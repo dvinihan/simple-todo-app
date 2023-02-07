@@ -98,6 +98,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         <TextField
           fullWidth
           label="Name"
+          name="Name"
           onChange={(e) => {
             setTask({ ...task, name: e.target.value });
             setHasChanges(true);
@@ -130,6 +131,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         >
           <Typography>Every</Typography>
           <TextField
+            name="Frequency Amount"
             onChange={(e) => {
               const newAmount = e.target.value ? parseInt(e.target.value) : 0;
               setTask((t) => ({ ...t, frequencyAmount: newAmount }));
@@ -153,6 +155,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         <Typography fontSize="18px">Last completed:</Typography>
         <DatePicker
           className="date-picker"
+          name="Last completed"
           onChange={onChangeDate}
           openToDate={new Date()}
           selected={new Date(task.lastDone)}
