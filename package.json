@@ -10,7 +10,7 @@
     "tsc": "tsc",
     "test": "jest --watch",
     "dev:cy": "NODE_ENV=test yarn dev",
-    "start:cy": "node ./scripts/start.mjs"
+    "start:cy": "node ./scripts/start.js"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
