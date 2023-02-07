@@ -17,10 +17,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Create .env file
-        run: |
-          touch .env
-          echo MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env.local
+      - name: Create .env.local file
+        run: echo MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env.local
       - name: Create cypress.env.json
         run: echo "{\"mongodb\":{\"uri\":\"${{ secrets.TEST_MONGODB_URI }}\",\"database\":\"simple-cleaning-app\"}}" > cypress.env.json
       - name: Cypress run
