@@ -13,7 +13,8 @@ jobs:
         uses: cypress-io/github-action@v5.0.5
         with:
           build: yarn build
-          start: MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} yarn start
+          start: yarn start
+          env: MONGODB_URI=${{ secrets.TEST_MONGODB_URI }}
   vercel-deploy:
     needs: cypress-run
     runs-on: ubuntu-latest
