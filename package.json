@@ -9,8 +9,7 @@
     "lint": "next lint",
     "tsc": "tsc",
     "test": "jest --watch",
-    "dev:cy": "NODE_ENV=test yarn dev",
-    "start:cy": "node ./scripts/start.js"
+    "dev:cy": "NODE_ENV=test yarn dev"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",

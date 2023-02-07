@@ -24,8 +24,8 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5.0.5
         with:
-          build: yarn build
-          start: yarn start
+          build: cat .env.local && yarn build
+          start: cat .env.local && yarn start
   vercel-deploy:
     needs: cypress-run
     runs-on: ubuntu-latest
