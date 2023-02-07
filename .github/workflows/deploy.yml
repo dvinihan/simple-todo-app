@@ -18,15 +18,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Create .env.local file
-        run: echo MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env.local
+        run: echo "MONGODB_URI=${{ secrets.TEST_MONGODB_URI }}" > .env.local
       - name: Create cypress.env.json
         run: echo "{\"mongodb\":{\"uri\":\"${{ secrets.TEST_MONGODB_URI }}\",\"database\":\"simple-cleaning-app\"}}" > cypress.env.json
       - run: pwd && ls -a && cat .env.local
       - name: Cypress run
         uses: cypress-io/github-action@v5.0.5
         with:
-          build: cat .env.local && yarn build
-          start: cat .env.local && yarn start
+          build: yarn build
+          start: yarn start
   vercel-deploy:
     needs: cypress-run
     runs-on: ubuntu-latest
