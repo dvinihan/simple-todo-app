@@ -10,15 +10,14 @@
 // ***********************************************
 //
 
-import { mockRoomsResponse } from "../fixtures/rooms";
-import { mockTasksResponse } from "../fixtures/tasks";
+import { Room, Task as MyTask } from "../../types";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       resetDb(): Chainable<void>;
-      seedDb(): Chainable<void>;
+      seedDb(rooms: Room[], tasks: MyTask[]): Chainable<void>;
     }
   }
 }
@@ -28,7 +27,7 @@ Cypress.Commands.add("resetDb", () => {
   cy.deleteMany({}, { collection: "tasks" });
 });
 
-Cypress.Commands.add("seedDb", () => {
-  cy.insertMany(mockRoomsResponse.rooms, { collection: "rooms" });
-  cy.insertMany(mockTasksResponse.tasks, { collection: "tasks" });
+Cypress.Commands.add("seedDb", (rooms: Room[], tasks: MyTask[]) => {
+  if (rooms.length > 0) cy.insertMany(rooms, { collection: "rooms" });
+  if (tasks.length > 0) cy.insertMany(tasks, { collection: "tasks" });
 });
