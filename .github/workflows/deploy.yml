@@ -21,6 +21,7 @@ jobs:
         run: echo MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env.local
       - name: Create cypress.env.json
         run: echo "{\"mongodb\":{\"uri\":\"${{ secrets.TEST_MONGODB_URI }}\",\"database\":\"simple-cleaning-app\"}}" > cypress.env.json
+      - run: cat .env.local
       - name: Cypress run
         uses: cypress-io/github-action@v5.0.5
         with:
