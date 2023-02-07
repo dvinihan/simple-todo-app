@@ -7,13 +7,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Create .env file
+        run: |
+          touch .env
+          echo MONGODB_URI=${{ secrets.TEST_MONGODB_URI }} >> .env
       - name: Create cypress.env.json
         run: echo "{\"mongodb\":{\"uri\":\"${{ secrets.TEST_MONGODB_URI }}\",\"database\":\"simple-cleaning-app\"}}" > cypress.env.json
       - name: Cypress run
         uses: cypress-io/github-action@v5.0.5
         with:
           build: yarn build
-          start: yarn start:cy MONGODB_URI=${{ secrets.TEST_MONGODB_URI }}
+          start: yarn start
   vercel-deploy:
     needs: cypress-run
     runs-on: ubuntu-latest
