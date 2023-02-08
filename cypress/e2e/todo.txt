@@ -1,0 +1,8 @@
+- Delete room
+- Delete task
+
+- Save task errors
+- Save room errors
+
+- Discard changes, save
+- Discard changes, don't save
