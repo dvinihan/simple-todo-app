@@ -60,6 +60,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
         <TextField
           fullWidth
           label="Name"
+          name="Name"
           onChange={(e) => {
             setRoom({ ...room, name: e.target.value });
             setHasChanges(true);

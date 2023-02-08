@@ -7,7 +7,9 @@ it("overdue and upcoming tasks", () => {
   cy.seedDb(mockRooms, mockTasks);
 
   cy.visit("/");
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Living Room").click();
+  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
+  cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("be.visible");
   cy.contains("Upcoming tasks").should("be.visible");
   cy.get('[data-testid="focused-task-link"]')
@@ -18,20 +20,18 @@ it("overdue and upcoming tasks", () => {
     )
     .then((text) => {
       expect(Object.values(text)).to.deep.equal([
-        "Do dishes in Family Room, 313 days overdue",
         "Laundry in Living Room, 2 days overdue",
         "clean baby in Living Room, due in 1 day",
-        "Take out trash in Family Room, due in 4 days",
       ]);
     });
-  cy.get('[data-testid="room-link"]')
-    .then((rooms) =>
-      Object.values(rooms)
-        .filter((room) => room.textContent)
-        .map((room) => room.textContent)
+  cy.get('[data-testid="task-link"]')
+    .then((tasks) =>
+      Object.values(tasks)
+        .filter((task) => task.textContent)
+        .map((task) => task.textContent)
     )
     .then((text) => {
-      expect(Object.values(text)).to.deep.equal(["Family Room", "Living Room"]);
+      expect(Object.values(text)).to.deep.equal(["Laundry", "clean baby"]);
     });
 });
 
@@ -41,7 +41,9 @@ it("only overdue tasks", () => {
   cy.seedDb(mockRooms, overdueTasks);
 
   cy.visit("/");
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Living Room").click();
+  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
+  cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("be.visible");
   cy.contains("Upcoming tasks").should("not.exist");
   cy.get('[data-testid="focused-task-link"]')
@@ -52,18 +54,17 @@ it("only overdue tasks", () => {
     )
     .then((text) => {
       expect(Object.values(text)).to.deep.equal([
-        "Do dishes in Family Room, 313 days overdue",
         "Laundry in Living Room, 2 days overdue",
       ]);
     });
-  cy.get('[data-testid="room-link"]')
+  cy.get('[data-testid="task-link"]')
     .then((rooms) =>
       Object.values(rooms)
         .filter((room) => room.textContent)
         .map((room) => room.textContent)
     )
     .then((text) => {
-      expect(Object.values(text)).to.deep.equal(["Family Room", "Living Room"]);
+      expect(Object.values(text)).to.deep.equal(["Laundry"]);
     });
 });
 
@@ -73,7 +74,9 @@ it("only upcoming tasks", () => {
   cy.seedDb(mockRooms, upcomingTasks);
 
   cy.visit("/");
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Living Room").click();
+  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
+  cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("not.exist");
   cy.contains("Upcoming tasks").should("be.visible");
   cy.get('[data-testid="focused-task-link"]')
@@ -85,17 +88,16 @@ it("only upcoming tasks", () => {
     .then((text) => {
       expect(Object.values(text)).to.deep.equal([
         "clean baby in Living Room, due in 1 day",
-        "Take out trash in Family Room, due in 4 days",
       ]);
     });
-  cy.get('[data-testid="room-link"]')
+  cy.get('[data-testid="task-link"]')
     .then((rooms) =>
       Object.values(rooms)
         .filter((room) => room.textContent)
         .map((room) => room.textContent)
     )
     .then((text) => {
-      expect(Object.values(text)).to.deep.equal(["Family Room", "Living Room"]);
+      expect(Object.values(text)).to.deep.equal(["clean baby"]);
     });
 });
 
@@ -105,17 +107,11 @@ it("no overdue or upcoming tasks", () => {
   cy.seedDb(mockRooms, []);
 
   cy.visit("/");
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Living Room").click();
+  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
+  cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("not.exist");
   cy.contains("Upcoming tasks").should("not.exist");
   cy.get('[data-testid="focused-task-link"]').should("not.exist");
-  cy.get('[data-testid="room-link"]')
-    .then((rooms) =>
-      Object.values(rooms)
-        .filter((room) => room.textContent)
-        .map((room) => room.textContent)
-    )
-    .then((text) => {
-      expect(Object.values(text)).to.deep.equal(["Family Room", "Living Room"]);
-    });
+  cy.get('[data-testid="task-link"]').should("not.exist");
 });

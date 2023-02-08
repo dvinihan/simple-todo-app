@@ -62,3 +62,21 @@ it("existing task", () => {
   cy.contains("weeks").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/24/2022");
 });
+
+it("just did it", () => {
+  cy.clock(new Date("11/17/22").getTime(), ["Date"]);
+  cy.resetDb();
+  cy.seedDb(mockRooms, mockTasks);
+
+  cy.visit("/");
+  cy.contains("Do dishes in Family Room, 313 days overdue").click();
+  cy.contains("Edit Task").should("be.visible");
+  cy.get('input[name="Last completed"]').should("have.value", "01/01/2022");
+
+  cy.contains("Just did it", { matchCase: false }).click();
+
+  cy.contains("Family Room").click();
+  cy.contains("Do dishes").click();
+  cy.contains("Edit Task").should("be.visible");
+  cy.get('input[name="Last completed"]').should("have.value", "11/17/2022");
+});

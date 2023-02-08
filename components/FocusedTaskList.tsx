@@ -36,7 +36,7 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
         const room = rooms.find((r) => r.id === task.roomId);
         return (
           <Link
-            data-testid={`task-link`}
+            data-testid={`focused-task-link`}
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
             key={task.id}
             style={{ textDecoration: "none" }}

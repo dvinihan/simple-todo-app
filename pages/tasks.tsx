@@ -47,6 +47,7 @@ const Tasks = () => {
         <FocusedTaskList roomId={roomId} type="upcoming" />
         {tasksInRoom.map((task) => (
           <ListItem
+            dataTestId="task-link"
             href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
             key={task.id}
             text={task.name}
