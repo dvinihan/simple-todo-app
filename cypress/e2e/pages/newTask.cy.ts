@@ -8,7 +8,9 @@ it("new task", () => {
 
   cy.visit("/");
   cy.contains("Family Room").click();
-  cy.url().should("include", "/tasks");
+
+  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
+  cy.get('[data-testid="EditIcon"]');
   cy.get('[data-testid="AddIcon"]').click();
   cy.contains("New Task").should("be.visible");
 
