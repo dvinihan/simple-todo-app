@@ -1,18 +1,19 @@
 import { mockRooms } from "../../fixtures/rooms";
 import { mockTasks } from "../../fixtures/tasks";
 
-it("existing task", () => {
+it("new task", () => {
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
   cy.resetDb();
   cy.seedDb(mockRooms, mockTasks);
 
   cy.visit("/");
-  cy.contains("Do dishes in Family Room, 313 days overdue").click();
-  cy.contains("Edit Task").should("be.visible");
+  cy.contains("Family Room").click();
+  cy.url().should("include", "/tasks");
+  cy.get('[data-testid="AddIcon"]').click();
+  cy.contains("New Task").should("be.visible");
 
   cy.get('input[name="Name"]')
-    .should("have.value", "Do dishes")
-    .clear()
+    .should("have.value", "")
     .type("Clean dishes")
     .should("have.value", "Clean dishes");
 
@@ -28,12 +29,12 @@ it("existing task", () => {
   cy.contains("Room: Living Room").should("be.visible");
 
   cy.get('input[name="Frequency Amount"]')
-    .should("have.value", 7)
+    .should("have.value", 0)
     .clear()
     .type("2")
     .should("have.value", 2);
 
-  cy.contains("days").click();
+  cy.contains("weeks").click();
   cy.get('[role="menuitem"]').then((menuItems) => {
     expect(
       Object.values(menuItems)
@@ -41,24 +42,25 @@ it("existing task", () => {
         .map((i) => i.textContent)
     ).to.deep.equal(["days", "weeks", "months", "years"]);
   });
-  cy.contains("weeks").click();
-  cy.contains("weeks").should("be.visible");
+  cy.contains("months").click();
+  cy.contains("months").should("be.visible");
 
   cy.get('input[name="Last completed"]')
-    .should("have.value", "01/01/2022")
+    .should("have.value", "11/17/2022")
     .click();
   cy.contains("24").click();
   cy.get('input[name="Last completed"]').should("have.value", "11/24/2022");
 
   cy.contains("Save").click();
 
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Family Room").should("be.visible");
+  cy.get('[data-testid="ArrowBackIcon"]').click();
   cy.contains("Living Room").click();
   cy.contains("Clean dishes").click();
 
   cy.contains("Edit Task").should("be.visible");
   cy.get('input[name="Name"]').should("have.value", "Clean dishes");
   cy.get('input[name="Frequency Amount"]').should("have.value", 2);
-  cy.contains("weeks").should("be.visible");
+  cy.contains("months").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/24/2022");
 });

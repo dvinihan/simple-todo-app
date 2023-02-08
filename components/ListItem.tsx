@@ -17,15 +17,14 @@ export const ListItem = ({ dataTestId = "", href, onClick, text }: Props) => {
       }}
       variant="outlined"
     >
-      <Link href={href}>
-        <a
-          data-testid={dataTestId}
-          style={{ color: "black", textDecoration: "none" }}
-        >
-          <Typography fontSize={"24px"} onClick={onClick}>
-            {text}
-          </Typography>
-        </a>
+      <Link
+        data-testid={dataTestId}
+        href={href}
+        style={{ color: "black", textDecoration: "none" }}
+      >
+        <Typography fontSize={"24px"} onClick={onClick}>
+          {text}
+        </Typography>
       </Link>
     </Card>
   );
