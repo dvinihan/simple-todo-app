@@ -1,5 +1,5 @@
-import { mockRooms } from "../../fixtures/rooms";
-import { mockTasks, overdueTasks, upcomingTasks } from "../../fixtures/tasks";
+import { mockRooms } from "../fixtures/rooms";
+import { mockTasks, overdueTasks, upcomingTasks } from "../fixtures/tasks";
 
 it("overdue and upcoming tasks", () => {
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
