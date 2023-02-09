@@ -34,5 +34,5 @@ it("edit room", () => {
   cy.contains("yes", { matchCase: false }).click();
 
   cy.contains("Rooms").should("be.visible");
-  cy.contains("Family Room").should("not.exist");
+  cy.contains("Office").should("not.exist");
 });
