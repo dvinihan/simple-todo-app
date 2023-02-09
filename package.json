@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "tsc": "tsc",
-    "dev:cy": "NODE_ENV=test yarn dev"
+    "dev:cy": "NODE_ENV=test yarn dev",
+    "cy:run": "node ./scripts/prepare-cypress && yarn cypress run",
+    "cy:open": "node ./scripts/prepare-cypress && yarn cypress open"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
