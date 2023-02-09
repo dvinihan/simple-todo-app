@@ -14,6 +14,9 @@ it("new task", () => {
   cy.get('[data-testid="AddIcon"]').click();
   cy.contains("New Task").should("be.visible");
 
+  cy.contains("Save").click();
+  cy.contains("You must enter a task name").should("be.visible");
+
   cy.get('input[name="Name"]')
     .should("have.value", "")
     .type("Clean dishes")

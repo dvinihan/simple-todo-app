@@ -11,6 +11,9 @@ it("new room", () => {
 
   cy.contains("New Room").should("be.visible");
 
+  cy.contains("Save").click();
+  cy.contains("You must enter a room name").should("be.visible");
+
   cy.get('input[name="Name"]')
     .should("have.value", "")
     .clear()

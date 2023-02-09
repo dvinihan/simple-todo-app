@@ -10,7 +10,7 @@ import { useCallback } from "react";
 import { useAppContext } from "../context/use-app-context";
 
 type DiscardModalProps = {
-  onSave: () => void;
+  onSave: (redirectUrl: string) => void;
 };
 
 export const DiscardModal = ({ onSave }: DiscardModalProps) => {
@@ -23,10 +23,9 @@ export const DiscardModal = ({ onSave }: DiscardModalProps) => {
   }, [setDiscardModalState]);
 
   const handleConfirm = useCallback(() => {
-    onSave();
-    router.push(discardModalState.redirectUrl);
+    onSave(discardModalState.redirectUrl);
     setDiscardModalState({ open: false, redirectUrl: "" });
-  }, [discardModalState.redirectUrl, onSave, router, setDiscardModalState]);
+  }, [discardModalState.redirectUrl, onSave, setDiscardModalState]);
 
   const handleDeny = useCallback(() => {
     setDiscardModalState({ open: false, redirectUrl: "" });

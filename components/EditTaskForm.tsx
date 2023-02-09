@@ -78,12 +78,13 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
     setHasChanges(true);
   };
 
-  const save = (taskToSave: Task) => {
+  const save = (taskToSave: Task, redirectUrl: string) => {
     if (!taskToSave.name) {
       setErrors((e) => ({ ...e, name: "You must enter a task name" }));
     } else {
       saveTask(taskToSave);
       setHasChanges(false);
+      router.push(redirectUrl);
     }
   };
 
@@ -163,19 +164,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
 
         <ActionButton
           color="success"
-          onClick={() => {
-            save({ ...task, lastDone: new Date() });
-            router.push(pageOrigin);
-          }}
+          onClick={() => save({ ...task, lastDone: new Date() }, pageOrigin)}
           text="Just did it!"
         />
-        <ActionButton
-          onClick={() => {
-            save(task);
-            router.push(pageOrigin);
-          }}
-          text="Save"
-        />
+        <ActionButton onClick={() => save(task, pageOrigin)} text="Save" />
       </Container>
 
       <PickerModal
@@ -211,7 +203,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         title="Are you sure you want to delete this task?"
       />
 
-      <DiscardModal onSave={() => save(task)} />
+      <DiscardModal onSave={(redirectUrl: string) => save(task, redirectUrl)} />
     </>
   );
 };

@@ -45,12 +45,13 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
     },
   });
 
-  const save = () => {
+  const save = (redirectUrl: string) => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
       saveRoom(room);
       setHasChanges(false);
+      router.push(redirectUrl);
     }
   };
 
@@ -74,10 +75,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
           </Alert>
         )}
         <ActionButton
-          onClick={() => {
-            save();
-            router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
-          }}
+          onClick={() => save(`${TASKS_ROUTE}?roomId=${room.id}`)}
           text="Save"
         />
       </Container>
@@ -100,7 +98,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
         title="Are you sure you want to delete this room?"
       />
 
-      <DiscardModal onSave={save} />
+      <DiscardModal onSave={(redirectUrl: string) => save(redirectUrl)} />
     </>
   );
 };
