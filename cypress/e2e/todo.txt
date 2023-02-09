@@ -1,5 +1,3 @@
-- Delete room
-- Delete task
 
 - Save task errors
 - Save room errors

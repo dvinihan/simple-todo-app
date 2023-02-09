@@ -65,26 +65,11 @@ it("new task", () => {
   cy.get('input[name="Frequency Amount"]').should("have.value", 2);
   cy.contains("months").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/24/2022");
-});
-
-it("just did it", () => {
-  cy.clock(new Date("11/17/22").getTime(), ["Date"]);
-  cy.resetDb();
-  cy.seedDb(mockRooms, mockTasks);
-
-  cy.visit("/");
-  cy.contains("Family Room").click();
-
-  // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
-  cy.get('[data-testid="EditIcon"]');
-  cy.get('[data-testid="AddIcon"]').click();
-  cy.contains("New Task").should("be.visible");
-  cy.get('input[name="Name"]').type("Mop floors");
 
   cy.contains("Just did it", { matchCase: false }).click();
 
-  cy.contains("Family Room").click();
-  cy.contains("Mop floors").click();
+  cy.contains("Living Room").click();
+  cy.contains("Clean dishes").click();
   cy.contains("Edit Task").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/17/2022");
 });

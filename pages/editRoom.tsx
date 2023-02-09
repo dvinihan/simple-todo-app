@@ -38,7 +38,7 @@ const EditRoom = () => {
   return (
     <>
       <NavBar backUrl={HOME_ROUTE} title="Edit Room" />
-      <EditRoomForm initialRoom={room} />;
+      <EditRoomForm initialRoom={room} />
     </>
   );
 };
