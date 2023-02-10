@@ -40,3 +40,7 @@ next-env.d.ts
 /cypress/videos
 cypress.env.json
 .env.test
+
+# pwa
+/public/sw*
+/public/workbox*
