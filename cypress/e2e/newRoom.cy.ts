@@ -27,5 +27,19 @@ it("new room", () => {
   cy.get('[data-testid="EditIcon"]').click();
 
   cy.contains("Edit Room").should("be.visible");
-  cy.get('input[name="Name"]').should("have.value", "Office");
+  cy.get('input[name="Name"]').should("have.value", "Office").type("blahblah");
+
+  cy.get('[data-testid="ArrowBackIcon"]').click();
+  cy.contains("Save changes?").should("be.visible");
+  cy.contains("no", { matchCase: false }).click();
+  cy.contains("Rooms").should("be.visible");
+
+  cy.contains("Office").click();
+  cy.get('[data-testid="EditIcon"]').click();
+  cy.get('input[name="Name"]').should("have.value", "Office").type("blahblah");
+  cy.get('[data-testid="ArrowBackIcon"]').click();
+  cy.contains("Save changes?").should("be.visible");
+  cy.contains("yes", { matchCase: false }).click();
+  cy.contains("Rooms").should("be.visible");
+  cy.contains("Officeblahblah").should("be.visible");
 });

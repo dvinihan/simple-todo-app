@@ -27,10 +27,16 @@ it("edit room", () => {
   cy.get('input[name="Name"]').should("have.value", "Office");
 
   cy.get('[data-testid="DeleteIcon"]').click();
+  cy.contains("Are you sure you want to delete this room?").should(
+    "be.visible"
+  );
   cy.contains("no", { matchCase: false }).click();
 
   cy.contains("Edit Room").should("be.visible");
   cy.get('[data-testid="DeleteIcon"]').click();
+  cy.contains("Are you sure you want to delete this room?").should(
+    "be.visible"
+  );
   cy.contains("yes", { matchCase: false }).click();
 
   cy.contains("Rooms").should("be.visible");

@@ -70,10 +70,16 @@ it("edit task", () => {
   cy.get('input[name="Last completed"]').should("have.value", "11/17/2022");
 
   cy.get('[data-testid="DeleteIcon"]').click();
+  cy.contains("Are you sure you want to delete this task?").should(
+    "be.visible"
+  );
   cy.contains("no", { matchCase: false }).click();
 
   cy.contains("Edit Task").should("be.visible");
   cy.get('[data-testid="DeleteIcon"]').click();
+  cy.contains("Are you sure you want to delete this task?").should(
+    "be.visible"
+  );
   cy.contains("yes", { matchCase: false }).click();
 
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯

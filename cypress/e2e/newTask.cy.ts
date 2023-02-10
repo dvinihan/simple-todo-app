@@ -75,4 +75,23 @@ it("new task", () => {
   cy.contains("Clean dishes").click();
   cy.contains("Edit Task").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/17/2022");
+
+  cy.get('input[name="Name"]')
+    .should("have.value", "Clean dishes")
+    .type("blahblah");
+  cy.get('[data-testid="ArrowBackIcon"]').click();
+  cy.contains("Save changes?").should("be.visible");
+  cy.contains("no", { matchCase: false }).click();
+
+  cy.contains("Living Room").click();
+  cy.contains("Clean dishes").click();
+  cy.get('input[name="Name"]')
+    .should("have.value", "Clean dishes")
+    .type("blahblah");
+  cy.get('[data-testid="ArrowBackIcon"]').click();
+  cy.contains("Save changes?").should("be.visible");
+  cy.contains("yes", { matchCase: false }).click();
+  cy.contains("Laundry").should("be.visible");
+  cy.contains("clean baby").should("be.visible");
+  cy.contains("Clean dishesblahblah").should("be.visible");
 });
