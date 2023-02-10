@@ -18,6 +18,8 @@ import { useAppContext } from "../context/use-app-context";
 import { DiscardModal } from "./DiscardModal";
 import { DeleteModal } from "./DeleteModal";
 import { useRoomsQuery } from "../queries/useRooms";
+import { useCheckForChanges } from "../hooks/useCheckForChanges";
+import { AppReducerActions } from "../context/types";
 
 type Props = {
   initialRoom: Room;
@@ -25,8 +27,10 @@ type Props = {
 
 export const EditRoomForm = ({ initialRoom }: Props) => {
   const [room, setRoom] = useState(initialRoom);
-  const { setHasChanges } = useAppContext();
+  const { dispatch } = useAppContext();
   const { refetch: refetchRooms } = useRoomsQuery();
+
+  useCheckForChanges();
 
   const router = useRouter();
 
@@ -50,7 +54,10 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
       saveRoom(room);
-      setHasChanges(false);
+      dispatch({
+        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+        payload: false,
+      });
       router.push(redirectUrl);
     }
   };
@@ -64,7 +71,10 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
           name="Name"
           onChange={(e) => {
             setRoom({ ...room, name: e.target.value });
-            setHasChanges(true);
+            dispatch({
+              type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+              payload: true,
+            });
           }}
           sx={{ backgroundColor: "white", marginY: "10px" }}
           value={room?.name}

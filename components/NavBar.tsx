@@ -3,6 +3,7 @@ import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
 import { HOME_ROUTE } from "../constants";
+import { AppReducerActions } from "../context/types";
 import { useAppContext } from "../context/use-app-context";
 
 type Props = {
@@ -12,15 +13,20 @@ type Props = {
 
 export const NavBar = ({ backUrl, title }: Props) => {
   const router = useRouter();
-  const { hasChanges, setDiscardModalState } = useAppContext();
+  const { state, dispatch } = useAppContext();
 
   const handleBackClick = useCallback(() => {
-    if (hasChanges) {
-      setDiscardModalState({ open: true, redirectUrl: backUrl ?? HOME_ROUTE });
+    if (state.hasChanges) {
+      dispatch({
+        type: AppReducerActions.OPEN_DISCARD_MODAL_ACTION,
+        payload: {
+          redirectUrl: backUrl ?? HOME_ROUTE,
+        },
+      });
     } else if (backUrl) {
       router.push(backUrl);
     }
-  }, [backUrl, hasChanges, router, setDiscardModalState]);
+  }, [backUrl, dispatch, router, state.hasChanges]);
 
   return (
     <>

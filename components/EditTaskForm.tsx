@@ -24,6 +24,8 @@ import { DiscardModal } from "./DiscardModal";
 import { useAppContext } from "../context/use-app-context";
 import { useTasksQuery } from "../queries/useTasks";
 import { DeleteModal } from "./DeleteModal";
+import { useCheckForChanges } from "../hooks/useCheckForChanges";
+import { AppReducerActions } from "../context/types";
 
 type Props = {
   initialTask: Task;
@@ -32,7 +34,9 @@ type Props = {
 
 const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const [task, setTask] = useState(initialTask);
-  const { setHasChanges } = useAppContext();
+  const { dispatch } = useAppContext();
+
+  useCheckForChanges();
 
   const router = useRouter();
 
@@ -62,7 +66,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
     const room = rooms.find((r) => r.name === roomName);
     if (room) {
       setTask((t) => ({ ...t, roomId: room.id }));
-      setHasChanges(true);
+      dispatch({
+        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+        payload: true,
+      });
     }
     setIsRoomDialogVisible(false);
   };
@@ -70,12 +77,18 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   const onSelectFrequency = (frequency: Frequency) => {
     setTask((t) => ({ ...t, frequencyType: frequency }));
     setIsFreqDialogVisible(false);
-    setHasChanges(true);
+    dispatch({
+      type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+      payload: true,
+    });
   };
 
   const onChangeDate = (date: Date) => {
     setTask((t) => ({ ...t, lastDone: date.getTime() }));
-    setHasChanges(true);
+    dispatch({
+      type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+      payload: true,
+    });
   };
 
   const save = (taskToSave: Task, redirectUrl: string) => {
@@ -83,7 +96,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
       setErrors((e) => ({ ...e, name: "You must enter a task name" }));
     } else {
       saveTask(taskToSave);
-      setHasChanges(false);
+      dispatch({
+        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+        payload: false,
+      });
       router.push(redirectUrl);
     }
   };
@@ -102,7 +118,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
           name="Name"
           onChange={(e) => {
             setTask({ ...task, name: e.target.value });
-            setHasChanges(true);
+            dispatch({
+              type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+              payload: true,
+            });
           }}
           sx={{ backgroundColor: "white", marginY: "10px" }}
           value={task.name}
@@ -136,7 +155,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
             onChange={(e) => {
               const newAmount = e.target.value ? parseInt(e.target.value) : 0;
               setTask((t) => ({ ...t, frequencyAmount: newAmount }));
-              setHasChanges(true);
+              dispatch({
+                type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+                payload: true,
+              });
             }}
             sx={{ backgroundColor: "white", marginX: "10px" }}
             type="numeric"
@@ -145,7 +167,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
           <Button
             onClick={() => {
               setIsFreqDialogVisible(true);
-              setHasChanges(true);
+              dispatch({
+                type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+                payload: true,
+              });
             }}
             variant="outlined"
           >

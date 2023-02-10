@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback } from "react";
+import { AppReducerActions } from "../context/types";
 import { useAppContext } from "../context/use-app-context";
 
 type DiscardModalProps = {
@@ -15,31 +16,34 @@ type DiscardModalProps = {
 
 export const DiscardModal = ({ onSave }: DiscardModalProps) => {
   const router = useRouter();
-  const { discardModalState, setDiscardModalState, setHasChanges } =
-    useAppContext();
+  const { state, dispatch } = useAppContext();
 
   const handleClose = useCallback(() => {
-    setDiscardModalState((state) => ({ ...state, open: false }));
-  }, [setDiscardModalState]);
+    dispatch({
+      type: AppReducerActions.CLOSE_DISCARD_MODAL_ACTION,
+    });
+  }, [dispatch]);
 
   const handleConfirm = useCallback(() => {
-    onSave(discardModalState.redirectUrl);
-    setDiscardModalState({ open: false, redirectUrl: "" });
-  }, [discardModalState.redirectUrl, onSave, setDiscardModalState]);
+    onSave(state.redirectUrl);
+    dispatch({
+      type: AppReducerActions.CLOSE_DISCARD_MODAL_ACTION,
+    });
+  }, [dispatch, onSave, state.redirectUrl]);
 
   const handleDeny = useCallback(() => {
-    setDiscardModalState({ open: false, redirectUrl: "" });
-    setHasChanges(false);
-    router.push(discardModalState.redirectUrl);
-  }, [
-    discardModalState.redirectUrl,
-    router,
-    setDiscardModalState,
-    setHasChanges,
-  ]);
+    dispatch({
+      type: AppReducerActions.CLOSE_DISCARD_MODAL_ACTION,
+    });
+    dispatch({
+      type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+      payload: false,
+    });
+    router.push(state.redirectUrl);
+  }, [dispatch, router, state.redirectUrl]);
 
   return (
-    <Dialog onClose={handleClose} open={discardModalState.open}>
+    <Dialog onClose={handleClose} open={state.isDiscardModalOpen}>
       <DialogContent>
         <DialogTitle>Save changes?</DialogTitle>
         <DialogActions>

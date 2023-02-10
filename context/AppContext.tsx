@@ -1,50 +1,22 @@
-import { useRouter } from "next/router";
-import {
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, Dispatch, ReactNode, useReducer } from "react";
+import { appReducer, InitialAppContextState } from "./reducer";
+import { AppContextState, AppReducerActionTypes } from "./types";
 
-type DiscardModalState = {
-  open: boolean;
-  redirectUrl: string;
+type AppContextType = {
+  state: AppContextState;
+  dispatch: Dispatch<AppReducerActionTypes>;
 };
 
-type AppContextState = {
-  hasChanges: boolean;
-  setHasChanges: Dispatch<SetStateAction<boolean>>;
-  discardModalState: DiscardModalState;
-  setDiscardModalState: Dispatch<SetStateAction<DiscardModalState>>;
-};
-export const AppContext = createContext<AppContextState | null>(null);
+export const AppContext = createContext<AppContextType | null>(null);
 
 export const AppContextProvider = ({ children }: { children: ReactNode }) => {
-  const router = useRouter();
-  const [hasChanges, setHasChanges] = useState(false);
-  const [discardModalState, setDiscardModalState] = useState<DiscardModalState>(
-    { open: false, redirectUrl: "" }
-  );
-
-  useEffect(() => {
-    router.beforePopState(({ url }) => {
-      if (hasChanges) {
-        setDiscardModalState({ open: true, redirectUrl: url });
-        return false;
-      }
-      return true;
-    });
-  }, [hasChanges, router, setDiscardModalState]);
+  const [state, dispatch] = useReducer(appReducer, InitialAppContextState);
 
   return (
     <AppContext.Provider
       value={{
-        hasChanges,
-        setHasChanges,
-        discardModalState,
-        setDiscardModalState,
+        state,
+        dispatch,
       }}
     >
       {children}
