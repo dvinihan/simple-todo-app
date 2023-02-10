@@ -2,10 +2,12 @@ import { mockRooms } from "../fixtures/rooms";
 import { mockTasks } from "../fixtures/tasks";
 
 it("edit task", () => {
+  /* Setup */
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
   cy.resetDb();
   cy.seedDb(mockRooms, mockTasks);
 
+  /* Edit task */
   cy.visit("/");
   cy.contains("Do dishes in Family Room, 313 days overdue").click();
   cy.contains("Edit Task").should("be.visible");
@@ -62,6 +64,7 @@ it("edit task", () => {
   cy.contains("weeks").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/24/2022");
 
+  /* "Just did it" button */
   cy.contains("Just did it", { matchCase: false }).click();
 
   cy.contains("Living Room").click();
@@ -69,12 +72,14 @@ it("edit task", () => {
   cy.contains("Edit Task").should("be.visible");
   cy.get('input[name="Last completed"]').should("have.value", "11/17/2022");
 
+  /* Delete task, deny */
   cy.get('[data-testid="DeleteIcon"]').click();
   cy.contains("Are you sure you want to delete this task?").should(
     "be.visible"
   );
   cy.contains("no", { matchCase: false }).click();
 
+  /* Delete task, confirm */
   cy.contains("Edit Task").should("be.visible");
   cy.get('[data-testid="DeleteIcon"]').click();
   cy.contains("Are you sure you want to delete this task?").should(

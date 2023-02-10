@@ -2,10 +2,12 @@ import { mockRooms } from "../fixtures/rooms";
 import { mockTasks } from "../fixtures/tasks";
 
 it("edit room", () => {
+  /* Setup */
   cy.clock(new Date("11/17/22").getTime(), ["Date"]);
   cy.resetDb();
   cy.seedDb(mockRooms, mockTasks);
 
+  /* Edit room */
   cy.visit("/");
   cy.contains("Family Room").click();
   cy.get('[data-testid="EditIcon"]').click();
@@ -26,12 +28,14 @@ it("edit room", () => {
   cy.contains("Edit Room").should("be.visible");
   cy.get('input[name="Name"]').should("have.value", "Office");
 
+  /* Delete room, deny */
   cy.get('[data-testid="DeleteIcon"]').click();
   cy.contains("Are you sure you want to delete this room?").should(
     "be.visible"
   );
   cy.contains("no", { matchCase: false }).click();
 
+  /* Delete room, confirm */
   cy.contains("Edit Room").should("be.visible");
   cy.get('[data-testid="DeleteIcon"]').click();
   cy.contains("Are you sure you want to delete this room?").should(
