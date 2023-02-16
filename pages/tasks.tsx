@@ -21,13 +21,13 @@ const Tasks = () => {
   const router = useRouter();
   const { roomId } = useIdParams();
 
-  const { tasks } = useTasksQuery();
-  const { rooms } = useRoomsQuery();
+  const { tasks, isLoading: isTasksQueryLoading } = useTasksQuery();
+  const { rooms, isLoading: isRoomsQueryLoading } = useRoomsQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === roomId);
   const roomName = rooms.find((room) => room.id === roomId)?.name;
 
-  if (!router.isReady) {
+  if (!router.isReady || isTasksQueryLoading || isRoomsQueryLoading) {
     return <LoadingPage />;
   }
 

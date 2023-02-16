@@ -35,7 +35,7 @@ export const FocusedTaskList = ({ origin, roomId, type }: Props) => {
       </Typography>
       {preparedTaskList.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
-        let href = `${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`;
+        let href = `${EDIT_TASK_ROUTE}?taskId=${task.id}`;
         if (origin === "home") {
           href = href.concat("&origin=home");
         }
