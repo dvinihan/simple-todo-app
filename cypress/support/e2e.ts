@@ -17,5 +17,15 @@
 import "./commands";
 
 import { addCommands } from "cypress-mongodb";
+import { CANCEL_ROUTE_CHANGE_ERROR_MESSAGE } from "../../constants";
 
 addCommands();
+
+Cypress.on("uncaught:exception", (err) => {
+  // we don't want to fail the test so we return false
+  if (err.message.includes(CANCEL_ROUTE_CHANGE_ERROR_MESSAGE)) {
+    return false;
+  }
+  // we still want to ensure there are no other unexpected
+  // errors, so we let them fail the test
+});

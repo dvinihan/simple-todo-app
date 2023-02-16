@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
 import { NavBar } from "../components/NavBar";
 import { useOriginParam } from "../hooks/useOriginParam";
+import { TASKS_ROUTE } from "../constants";
 
 const EditTask = () => {
   const router = useRouter();
@@ -15,6 +16,9 @@ const EditTask = () => {
   const pageOrigin = useOriginParam();
 
   const [task, setTask] = useState<Task | undefined>();
+
+  const backUrl =
+    pageOrigin === "home" ? "/" : `${TASKS_ROUTE}?roomId=${task?.roomId}`;
 
   const { isLoading } = useTasksQuery({
     onSuccess: (data) => {
@@ -38,8 +42,8 @@ const EditTask = () => {
 
   return (
     <>
-      <NavBar backUrl={pageOrigin} title="Edit Task" />
-      <EditTaskForm initialTask={task} pageOrigin={pageOrigin} />
+      <NavBar backUrl={backUrl} title="Edit Task" />
+      <EditTaskForm initialTask={task} />
     </>
   );
 };

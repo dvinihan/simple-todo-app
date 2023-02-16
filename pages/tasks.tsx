@@ -48,22 +48,18 @@ const Tasks = () => {
         {tasksInRoom.map((task) => (
           <ListItem
             dataTestId="task-link"
-            href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
+            href={`${EDIT_TASK_ROUTE}?taskId=${task.id}`}
             key={task.id}
             text={task.name}
           />
         ))}
       </Box>
-      <Link
-        href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
-      >
+      <Link href={`${EDIT_ROOM_ROUTE}?roomId=${roomId}`}>
         <Fab sx={{ position: "fixed", right: "16px", bottom: "86px" }}>
           <Edit />
         </Fab>
       </Link>
-      <Link
-        href={`${NEW_TASK_ROUTE}?roomId=${roomId}&origin=${window.location.href}`}
-      >
+      <Link href={`${NEW_TASK_ROUTE}?roomId=${roomId}`}>
         <Fab sx={{ position: "fixed", right: "16px", bottom: "16px" }}>
           <Add />
         </Fab>

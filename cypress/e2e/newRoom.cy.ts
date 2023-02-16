@@ -37,16 +37,16 @@ it("new room", () => {
   cy.get('[data-testid="ArrowBackIcon"]').click();
   cy.contains("Save changes?").should("be.visible");
   cy.contains("no", { matchCase: false }).click();
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Rooms").should("not.exist");
 
   /* Discard modal from navbar, click yes */
-  cy.contains("Office").click();
+  cy.contains("Office").should("be.visible");
   cy.get('[data-testid="EditIcon"]').click();
   cy.get('input[name="Name"]').should("have.value", "Office").type("blahblah");
   cy.get('[data-testid="ArrowBackIcon"]').click();
   cy.contains("Save changes?").should("be.visible");
   cy.contains("yes", { matchCase: false }).click();
-  cy.contains("Rooms").should("be.visible");
+  cy.contains("Rooms").should("not.exist");
   cy.contains("Officeblahblah").should("be.visible").click();
 
   /* Discard modal from broswer back button, click no */

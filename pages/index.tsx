@@ -19,8 +19,8 @@ const Home = () => {
     <>
       <NavBar title="Rooms" />
       <Box>
-        <FocusedTaskList type="overdue" />
-        <FocusedTaskList type="upcoming" />
+        <FocusedTaskList origin="home" type="overdue" />
+        <FocusedTaskList origin="home" type="upcoming" />
         {rooms.map((room) => (
           <ListItem
             dataTestId="room-link"
@@ -30,7 +30,7 @@ const Home = () => {
           />
         ))}
       </Box>
-      <Link href={`${NEW_ROOM_ROUTE}?origin=${window.location.href}`}>
+      <Link href={NEW_ROOM_ROUTE}>
         <Fab
           sx={{
             position: "fixed",

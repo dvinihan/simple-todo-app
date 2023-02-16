@@ -7,7 +7,7 @@ import { LoadingPage } from "../components/LoadingPage";
 import { EditRoomForm } from "../components/EditRoomForm";
 import { ErrorPage } from "../components/ErrorPage";
 import { NavBar } from "../components/NavBar";
-import { HOME_ROUTE } from "../constants";
+import { TASKS_ROUTE } from "../constants";
 
 const EditRoom = () => {
   const router = useRouter();
@@ -37,7 +37,7 @@ const EditRoom = () => {
 
   return (
     <>
-      <NavBar backUrl={HOME_ROUTE} title="Edit Room" />
+      <NavBar backUrl={`${TASKS_ROUTE}?roomId=${roomId}`} title="Edit Room" />
       <EditRoomForm initialRoom={room} />
     </>
   );

@@ -8,11 +8,12 @@ import { useRoomsQuery } from "../queries/useRooms";
 import { useTasksQuery } from "../queries/useTasks";
 
 type Props = {
-  type: "upcoming" | "overdue";
+  origin?: "home";
   roomId?: number;
+  type: "upcoming" | "overdue";
 };
 
-export const FocusedTaskList = ({ type, roomId }: Props) => {
+export const FocusedTaskList = ({ origin, roomId, type }: Props) => {
   const { rooms } = useRoomsQuery();
   const { tasks } = useTasksQuery();
 
@@ -34,10 +35,14 @@ export const FocusedTaskList = ({ type, roomId }: Props) => {
       </Typography>
       {preparedTaskList.map((task) => {
         const room = rooms.find((r) => r.id === task.roomId);
+        let href = `${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`;
+        if (origin === "home") {
+          href = href.concat("&origin=home");
+        }
         return (
           <Link
             data-testid={`focused-task-link`}
-            href={`${EDIT_TASK_ROUTE}?taskId=${task.id}&origin=${window.location.href}`}
+            href={href}
             key={task.id}
             style={{ textDecoration: "none" }}
           >

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Frequency } from "../constants";
+import { Frequency, TASKS_ROUTE } from "../constants";
 import { useRoomsQuery } from "../queries/useRooms";
 import { useSaveTask } from "../queries/useSaveTask";
 import { Task } from "../types";
@@ -24,19 +24,19 @@ import { DiscardModal } from "./DiscardModal";
 import { useAppContext } from "../context/use-app-context";
 import { useTasksQuery } from "../queries/useTasks";
 import { DeleteModal } from "./DeleteModal";
-import { useCheckForChanges } from "../hooks/useCheckForChanges";
 import { AppReducerActions } from "../context/types";
+import { useOriginParam } from "../hooks/useOriginParam";
 
 type Props = {
   initialTask: Task;
-  pageOrigin: string;
 };
 
-const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
+const EditTaskForm = ({ initialTask }: Props) => {
   const [task, setTask] = useState(initialTask);
   const { dispatch } = useAppContext();
-
-  useCheckForChanges();
+  const pageOrigin = useOriginParam();
+  const backUrl =
+    pageOrigin === "home" ? "/" : `${TASKS_ROUTE}?roomId=${task.roomId}`;
 
   const router = useRouter();
 
@@ -50,7 +50,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
   });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
-      router.push(pageOrigin);
+      router.push(backUrl);
     },
   });
 
@@ -91,7 +91,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
     });
   };
 
-  const save = (taskToSave: Task, redirectUrl: string) => {
+  const save = (taskToSave: Task) => {
     if (!taskToSave.name) {
       setErrors((e) => ({ ...e, name: "You must enter a task name" }));
     } else {
@@ -100,7 +100,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         type: AppReducerActions.SET_HAS_CHANGES_ACTION,
         payload: false,
       });
-      router.push(redirectUrl);
+      router.push(backUrl);
     }
   };
 
@@ -189,10 +189,10 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
 
         <ActionButton
           color="success"
-          onClick={() => save({ ...task, lastDone: new Date() }, pageOrigin)}
+          onClick={() => save({ ...task, lastDone: new Date() })}
           text="Just did it!"
         />
-        <ActionButton onClick={() => save(task, pageOrigin)} text="Save" />
+        <ActionButton onClick={() => save(task)} text="Save" />
       </Container>
 
       <PickerModal
@@ -228,7 +228,7 @@ const EditTaskForm = ({ initialTask, pageOrigin }: Props) => {
         title="Are you sure you want to delete this task?"
       />
 
-      <DiscardModal onSave={(redirectUrl: string) => save(task, redirectUrl)} />
+      <DiscardModal onSave={() => save(task)} />
     </>
   );
 };

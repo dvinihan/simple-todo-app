@@ -54,8 +54,7 @@ it("edit task", () => {
 
   cy.contains("Save").click();
 
-  cy.contains("Rooms").should("be.visible");
-  cy.contains("Living Room").click();
+  cy.contains("Living Room").should("be.visible");
   cy.contains("Clean dishes").click();
 
   cy.contains("Edit Task").should("be.visible");

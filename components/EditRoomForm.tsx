@@ -18,7 +18,6 @@ import { useAppContext } from "../context/use-app-context";
 import { DiscardModal } from "./DiscardModal";
 import { DeleteModal } from "./DeleteModal";
 import { useRoomsQuery } from "../queries/useRooms";
-import { useCheckForChanges } from "../hooks/useCheckForChanges";
 import { AppReducerActions } from "../context/types";
 
 type Props = {
@@ -29,8 +28,6 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
   const [room, setRoom] = useState(initialRoom);
   const { dispatch } = useAppContext();
   const { refetch: refetchRooms } = useRoomsQuery();
-
-  useCheckForChanges();
 
   const router = useRouter();
 
@@ -49,7 +46,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
     },
   });
 
-  const save = (redirectUrl: string) => {
+  const save = () => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
@@ -58,7 +55,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
         type: AppReducerActions.SET_HAS_CHANGES_ACTION,
         payload: false,
       });
-      router.push(redirectUrl);
+      router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
     }
   };
 
@@ -84,10 +81,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
             {errors.name}
           </Alert>
         )}
-        <ActionButton
-          onClick={() => save(`${TASKS_ROUTE}?roomId=${room.id}`)}
-          text="Save"
-        />
+        <ActionButton onClick={() => save()} text="Save" />
       </Container>
 
       <Modal open={isLoadingSaveRoom}>
@@ -108,7 +102,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
         title="Are you sure you want to delete this room?"
       />
 
-      <DiscardModal onSave={(redirectUrl: string) => save(redirectUrl)} />
+      <DiscardModal onSave={() => save()} />
     </>
   );
 };

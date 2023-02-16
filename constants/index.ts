@@ -14,3 +14,6 @@ export enum Frequency {
   MONTHS = "months",
   YEARS = "years",
 }
+
+export const CANCEL_ROUTE_CHANGE_ERROR_MESSAGE =
+  "Canceling route change from _app.tsx";
