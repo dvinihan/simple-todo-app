@@ -22,7 +22,6 @@ import { PickerModal } from "../components/PickerModal";
 import "react-datepicker/dist/react-datepicker.css";
 import { DiscardModal } from "./DiscardModal";
 import { useAppContext } from "../context/use-app-context";
-import { useTasksQuery } from "../queries/useTasks";
 import { DeleteModal } from "./DeleteModal";
 import { AppReducerActions } from "../context/types";
 import { useOriginParam } from "../hooks/useOriginParam";
@@ -41,13 +40,8 @@ const EditTaskForm = ({ initialTask }: Props) => {
   const router = useRouter();
 
   const { rooms } = useRoomsQuery();
-  const { refetch: refetchTasks } = useTasksQuery();
 
-  const { mutate: saveTask } = useSaveTask({
-    onSuccess: () => {
-      refetchTasks();
-    },
-  });
+  const { mutate: saveTask } = useSaveTask();
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
       router.push(backUrl);

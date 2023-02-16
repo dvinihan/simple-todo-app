@@ -8,7 +8,6 @@ export const AppReducerActions = {
   SET_HAS_CHANGES_ACTION: "SET_HAS_CHANGES_ACTION",
   CLOSE_DISCARD_MODAL_ACTION: "CLOSE_DISCARD_MODAL_ACTION",
   OPEN_DISCARD_MODAL_ACTION: "OPEN_DISCARD_MODAL_ACTION",
-  SET_REDIRECT_URL_ACTION: "SET_REDIRECT_URL_ACTION",
 };
 
 export type SetHasChangesAction = {
@@ -27,13 +26,7 @@ export type OpenDiscardModalAction = {
   };
 };
 
-export type SetRedirectUrlAction = {
-  type: typeof AppReducerActions.SET_REDIRECT_URL_ACTION;
-  payload: string;
-};
-
 export type AppReducerActionTypes =
   | SetHasChangesAction
   | CloseDiscardModalAction
-  | OpenDiscardModalAction
-  | SetRedirectUrlAction;
+  | OpenDiscardModalAction;

@@ -17,7 +17,6 @@ import { ActionButton } from "../components/ActionButton";
 import { useAppContext } from "../context/use-app-context";
 import { DiscardModal } from "./DiscardModal";
 import { DeleteModal } from "./DeleteModal";
-import { useRoomsQuery } from "../queries/useRooms";
 import { AppReducerActions } from "../context/types";
 
 type Props = {
@@ -27,7 +26,6 @@ type Props = {
 export const EditRoomForm = ({ initialRoom }: Props) => {
   const [room, setRoom] = useState(initialRoom);
   const { dispatch } = useAppContext();
-  const { refetch: refetchRooms } = useRoomsQuery();
 
   const router = useRouter();
 
@@ -35,18 +33,14 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
 
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
-  const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
-    onSuccess: () => {
-      refetchRooms();
-    },
-  });
-  const { mutate: doDelete } = useDeleteRoom({
+  const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom();
+  const { mutate: deleteRoom } = useDeleteRoom({
     onSuccess: () => {
       router.push(HOME_ROUTE);
     },
   });
 
-  const save = () => {
+  const handleSave = () => {
     if (!room.name) {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
@@ -81,7 +75,7 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
             {errors.name}
           </Alert>
         )}
-        <ActionButton onClick={() => save()} text="Save" />
+        <ActionButton onClick={handleSave} text="Save" />
       </Container>
 
       <Modal open={isLoadingSaveRoom}>
@@ -97,12 +91,12 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
 
       <DeleteModal
         onClose={() => setShouldShowDeleteModal(false)}
-        onDelete={() => doDelete(room.id)}
+        onDelete={() => deleteRoom(room.id)}
         open={shouldShowDeleteModal}
         title="Are you sure you want to delete this room?"
       />
 
-      <DiscardModal onSave={() => save()} />
+      <DiscardModal onSave={handleSave} />
     </>
   );
 };

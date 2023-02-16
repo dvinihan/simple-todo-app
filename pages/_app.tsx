@@ -15,7 +15,6 @@ const RouteChangeWrapper = ({ children }: { children: ReactNode }) => {
 
   const handleRouteChangeStart = useCallback(
     (url: string) => {
-      console.log("vinihan - handling", state.hasChanges);
       if (state.hasChanges) {
         dispatch({
           type: AppReducerActions.OPEN_DISCARD_MODAL_ACTION,

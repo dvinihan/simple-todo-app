@@ -5,7 +5,6 @@ import {
   AppReducerActionTypes,
   OpenDiscardModalAction,
   SetHasChangesAction,
-  SetRedirectUrlAction,
 } from "./types";
 
 export const InitialAppContextState: AppContextState = {
@@ -36,12 +35,6 @@ export const appReducer: Reducer<AppContextState, AppReducerActionTypes> = (
         ...state,
         isDiscardModalOpen: true,
         redirectUrl: (action as OpenDiscardModalAction).payload.redirectUrl,
-      };
-    }
-    case AppReducerActions.SET_REDIRECT_URL_ACTION: {
-      return {
-        ...state,
-        redirectUrl: (action as SetRedirectUrlAction).payload,
       };
     }
     default: {

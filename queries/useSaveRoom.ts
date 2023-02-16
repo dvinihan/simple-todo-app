@@ -1,7 +1,9 @@
 import { useMutation, UseMutationOptions } from "react-query";
 import { Room } from "../types";
 
-export const useSaveRoom = (options: UseMutationOptions<void, any, Room>) => {
+export const useSaveRoom = (
+  options: UseMutationOptions<void, unknown, Room> = {}
+) => {
   return useMutation(
     "saveRoom",
     async (newRoom: Room) => {
