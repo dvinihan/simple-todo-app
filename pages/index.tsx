@@ -7,9 +7,12 @@ import { ListItem } from "../components/ListItem";
 import Link from "next/link";
 import { LoadingPage } from "../components/LoadingPage";
 import { NavBar } from "../components/NavBar";
+import { useGetTaskMap } from "../hooks/useGetTaskMap";
 
 const Home = () => {
   const { rooms, isLoading } = useRoomsQuery();
+
+  const { overdueTasks, upcomingTasks } = useGetTaskMap();
 
   if (isLoading) {
     return <LoadingPage />;
@@ -19,8 +22,16 @@ const Home = () => {
     <>
       <NavBar title="Rooms" />
       <Box>
-        <FocusedTaskList origin="home" type="overdue" />
-        <FocusedTaskList origin="home" type="upcoming" />
+        <FocusedTaskList
+          origin="home"
+          tasksToDisplay={overdueTasks}
+          title="Overdue tasks"
+        />
+        <FocusedTaskList
+          origin="home"
+          tasksToDisplay={upcomingTasks}
+          title="Upcoming tasks"
+        />
         {rooms.map((room) => (
           <ListItem
             dataTestId="room-link"

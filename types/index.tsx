@@ -34,9 +34,10 @@ export class Task {
   }
 }
 
-export type TaskWithDaysUntilDue = Task & {
+export type ExtendedTask = Task & {
   /**
    * A positive value means the task is due soon, while a negative value means it's overdue.
    */
   daysUntilDue: number;
+  roomName: string;
 };

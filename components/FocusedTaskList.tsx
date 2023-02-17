@@ -1,28 +1,17 @@
 import { Card, Typography } from "@mui/material";
 import { formatDuration } from "date-fns";
 import Link from "next/link";
-import { useMemo } from "react";
 import { EDIT_TASK_ROUTE } from "../constants";
-import { prepareTaskList } from "../helpers/prepareTaskList";
-import { useRoomsQuery } from "../queries/useRooms";
-import { useTasksQuery } from "../queries/useTasks";
+import { ExtendedTask } from "../types";
 
 type Props = {
   origin?: "home";
-  roomId?: number;
-  type: "upcoming" | "overdue";
+  tasksToDisplay: ExtendedTask[];
+  title: string;
 };
 
-export const FocusedTaskList = ({ origin, roomId, type }: Props) => {
-  const { rooms } = useRoomsQuery();
-  const { tasks } = useTasksQuery();
-
-  const preparedTaskList = useMemo(
-    () => prepareTaskList(type, tasks, roomId),
-    [roomId, tasks, type]
-  );
-
-  return preparedTaskList.length > 0 ? (
+export const FocusedTaskList = ({ origin, tasksToDisplay, title }: Props) => {
+  return tasksToDisplay.length > 0 ? (
     <Card
       sx={{
         marginTop: "10px",
@@ -30,11 +19,8 @@ export const FocusedTaskList = ({ origin, roomId, type }: Props) => {
         backgroundColor: "lightyellow",
       }}
     >
-      <Typography fontSize={22}>
-        {type === "upcoming" ? "Upcoming" : "Overdue"} tasks
-      </Typography>
-      {preparedTaskList.map((task) => {
-        const room = rooms.find((r) => r.id === task.roomId);
+      <Typography fontSize={22}>{title}</Typography>
+      {tasksToDisplay.map((task) => {
         let href = `${EDIT_TASK_ROUTE}?taskId=${task.id}`;
         if (origin === "home") {
           href = href.concat("&origin=home");
@@ -49,7 +35,7 @@ export const FocusedTaskList = ({ origin, roomId, type }: Props) => {
             <Card sx={{ padding: "6px", marginTop: "10px" }}>
               <Typography>
                 <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
-                <span style={{ fontWeight: "bold" }}>{room?.name}, </span>
+                <span style={{ fontWeight: "bold" }}>{task.roomName}, </span>
                 <span style={{ color: "red" }}>
                   {task.daysUntilDue === 0
                     ? "Due today"

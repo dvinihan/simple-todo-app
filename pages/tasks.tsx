@@ -16,10 +16,12 @@ import { PageError } from "../components/PageError";
 import { LoadingPage } from "../components/LoadingPage";
 import { useRouter } from "next/router";
 import { NavBar } from "../components/NavBar";
+import { useGetTaskMap } from "../hooks/useGetTaskMap";
 
 const Tasks = () => {
   const router = useRouter();
   const { roomId } = useIdParams();
+  const { overdueTasks, upcomingTasks } = useGetTaskMap();
 
   const { tasks, isLoading: isTasksQueryLoading } = useTasksQuery();
   const { rooms, isLoading: isRoomsQueryLoading } = useRoomsQuery();
@@ -43,8 +45,11 @@ const Tasks = () => {
     <>
       <NavBar backUrl={HOME_ROUTE} title={roomName} />
       <Box>
-        <FocusedTaskList roomId={roomId} type="overdue" />
-        <FocusedTaskList roomId={roomId} type="upcoming" />
+        <FocusedTaskList tasksToDisplay={overdueTasks} title="Overdue tasks" />
+        <FocusedTaskList
+          tasksToDisplay={upcomingTasks}
+          title="Upcoming tasks"
+        />
         {tasksInRoom.map((task) => (
           <ListItem
             dataTestId="task-link"
