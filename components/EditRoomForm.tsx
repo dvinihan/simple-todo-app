@@ -33,7 +33,17 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
 
   const [shouldShowDeleteModal, setShouldShowDeleteModal] = useState(false);
 
-  const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom();
+  const { mutate: saveRoom, isLoading: isLoadingSaveRoom } = useSaveRoom({
+    onMutate: () => {
+      dispatch({
+        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+        payload: false,
+      });
+    },
+    onSuccess: () => {
+      router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
+    },
+  });
   const { mutate: deleteRoom } = useDeleteRoom({
     onSuccess: () => {
       router.push(HOME_ROUTE);
@@ -45,11 +55,6 @@ export const EditRoomForm = ({ initialRoom }: Props) => {
       setErrors((e) => ({ ...e, name: "You must enter a room name" }));
     } else {
       saveRoom(room);
-      dispatch({
-        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
-        payload: false,
-      });
-      router.push(`${TASKS_ROUTE}?roomId=${room.id}`);
     }
   };
 

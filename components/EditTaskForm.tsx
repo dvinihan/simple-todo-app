@@ -41,7 +41,17 @@ const EditTaskForm = ({ initialTask }: Props) => {
 
   const { rooms } = useRoomsQuery();
 
-  const { mutate: saveTask } = useSaveTask();
+  const { mutate: saveTask } = useSaveTask({
+    onMutate: () => {
+      dispatch({
+        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
+        payload: false,
+      });
+    },
+    onSuccess: () => {
+      router.push(backUrl);
+    },
+  });
   const { mutate: doDelete } = useDeleteTask({
     onSuccess: () => {
       router.push(backUrl);
@@ -90,11 +100,6 @@ const EditTaskForm = ({ initialTask }: Props) => {
       setErrors((e) => ({ ...e, name: "You must enter a task name" }));
     } else {
       saveTask(taskToSave);
-      dispatch({
-        type: AppReducerActions.SET_HAS_CHANGES_ACTION,
-        payload: false,
-      });
-      router.push(backUrl);
     }
   };
 
