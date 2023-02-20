@@ -9,7 +9,7 @@ it("new task", () => {
 
   /* Save new task - error */
   cy.visit("/");
-  cy.contains("Family Room").click();
+  cy.get(":contains(Family Room)").last().click();
 
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
   cy.get('[data-testid="EditIcon"]');

@@ -7,7 +7,7 @@ it("overdue and upcoming tasks", () => {
   cy.seedDb(mockRooms, mockTasks);
 
   cy.visit("/");
-  cy.contains("Living Room").click();
+  cy.get(":contains(Living Room)").last().click();
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
   cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("be.visible");
@@ -41,7 +41,7 @@ it("only overdue tasks", () => {
   cy.seedDb(mockRooms, overdueTasks);
 
   cy.visit("/");
-  cy.contains("Living Room").click();
+  cy.get(":contains(Living Room)").last().click();
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
   cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("be.visible");
@@ -74,7 +74,7 @@ it("only upcoming tasks", () => {
   cy.seedDb(mockRooms, upcomingTasks);
 
   cy.visit("/");
-  cy.contains("Living Room").click();
+  cy.get(":contains(Living Room)").last().click();
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
   cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("not.exist");
@@ -107,7 +107,7 @@ it("no overdue or upcoming tasks", () => {
   cy.seedDb(mockRooms, []);
 
   cy.visit("/");
-  cy.contains("Living Room").click();
+  cy.get(":contains(Living Room)").last().click();
   // this is the only reliable indicator the the tasks page has rendered ¯\_(ツ)_/¯
   cy.get('[data-testid="EditIcon"]');
   cy.contains("Overdue tasks").should("not.exist");
