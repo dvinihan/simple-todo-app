@@ -33,7 +33,7 @@ export const FocusedTaskList = ({ origin, tasksToDisplay, title }: Props) => {
             style={{ textDecoration: "none" }}
           >
             <Card sx={{ padding: "6px", marginTop: "10px" }}>
-              <Typography>
+              <Typography fontSize={14}>
                 <span style={{ fontWeight: "bold" }}>{task.name}</span> in{" "}
                 <span style={{ fontWeight: "bold" }}>{task.roomName}, </span>
                 <span style={{ color: "red" }}>
