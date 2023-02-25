@@ -16,7 +16,7 @@ const tasks = async (
     const client = await clientPromise;
 
     const data = await client
-      .db("simple-cleaning-app")
+      .db("simple-todo-app")
       .collection<Task>("tasks")
       .find()
       .toArray();

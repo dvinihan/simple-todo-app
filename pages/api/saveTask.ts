@@ -8,7 +8,7 @@ const saveTask = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const { id } = req.body;
     const data = await client
-      .db("simple-cleaning-app")
+      .db("simple-todo-app")
       .collection("tasks")
       .updateOne({ id }, { $set: req.body }, { upsert: true });
     res.send(data);

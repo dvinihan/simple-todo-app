@@ -11,7 +11,7 @@ const prepareCypress = () => {
 
   writeFileSync(
     "cypress.env.json",
-    `{"mongodb":{"uri":"${mongoUri}","database":"simple-cleaning-app"}}`
+    `{"mongodb":{"uri":"${mongoUri}","database":"simple-todo-app"}}`
   );
 };
 

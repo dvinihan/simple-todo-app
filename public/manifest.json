@@ -1,5 +1,5 @@
 {
-  "name": "Simple Cleaning App",
+  "name": "Simple Todo App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "lightblue",

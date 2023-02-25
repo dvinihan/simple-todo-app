@@ -13,12 +13,12 @@ const deleteRoom = async (req: NextApiRequest, res: NextApiResponse) => {
       roomIdString === undefined ? undefined : Number(roomIdString);
 
     await client
-      .db("simple-cleaning-app")
+      .db("simple-todo-app")
       .collection<Task>("tasks")
       .deleteMany({ roomId });
 
     const data = await client
-      .db("simple-cleaning-app")
+      .db("simple-todo-app")
       .collection<Room>("rooms")
       .deleteOne({ id: roomId });
     res.send(data);

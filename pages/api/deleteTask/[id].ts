@@ -13,7 +13,7 @@ const deleteTask = async (req: NextApiRequest, res: NextApiResponse) => {
       taskIdString === undefined ? undefined : Number(taskIdString);
 
     const data = await client
-      .db("simple-cleaning-app")
+      .db("simple-todo-app")
       .collection<Task>("tasks")
       .deleteOne({ id: taskId });
     res.send(data);
