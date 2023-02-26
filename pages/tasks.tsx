@@ -4,7 +4,7 @@ import {
   HOME_ROUTE,
   NEW_TASK_ROUTE,
 } from "../constants";
-import { useTasksQuery } from "../queries/useTasks";
+import { useTaskLists } from "../queries/useListsQuery";
 import { Box, Fab } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 import { useRoomsQuery } from "../queries/useRooms";
@@ -23,7 +23,7 @@ const Tasks = () => {
   const { roomId } = useIdParams();
   const { overdueTasks, upcomingTasks } = useGetTaskMap();
 
-  const { tasks, isLoading: isTasksQueryLoading } = useTasksQuery();
+  const { tasks, isLoading: isTasksQueryLoading } = useTaskLists();
   const { rooms, isLoading: isRoomsQueryLoading } = useRoomsQuery();
 
   const tasksInRoom = tasks.filter((task) => task.roomId === roomId);

@@ -4,7 +4,7 @@ import { useIdParams } from "../hooks/useIdParams";
 import EditTaskForm from "../components/EditTaskForm";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
-import { useTasksQuery } from "../queries/useTasks";
+import { useTaskLists } from "../queries/useListsQuery";
 import { NavBar } from "../components/NavBar";
 import { useOriginParam } from "../hooks/useOriginParam";
 import { TASKS_ROUTE } from "../constants";
@@ -12,7 +12,7 @@ import { TASKS_ROUTE } from "../constants";
 const NewTask = () => {
   const router = useRouter();
   const { roomId } = useIdParams();
-  const { nextId, isFetched } = useTasksQuery();
+  const { nextId, isFetched } = useTaskLists();
   const pageOrigin = useOriginParam();
   const backUrl =
     pageOrigin === "home" ? "/" : `${TASKS_ROUTE}?roomId=${roomId}`;

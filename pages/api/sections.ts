@@ -1,18 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getErrorMessage } from "../../helpers/getErrorMessage";
-import { Task } from "../../types";
+import { Section } from "../../types";
 import clientPromise from "../../util/mongodb";
 
-const tasks = async (
+const sections = async (
   req: NextApiRequest,
-  res: NextApiResponse<Task[] | Error>
+  res: NextApiResponse<Section[] | Error>
 ) => {
   try {
     const client = await clientPromise;
 
     const data = await client
       .db("simple-todo-app")
-      .collection<Task>("tasks")
+      .collection<Section>("sections")
       .find()
       .toArray();
 
@@ -20,8 +20,8 @@ const tasks = async (
   } catch (err) {
     res
       .status(500)
-      .send({ name: "tasks error", message: getErrorMessage(err) });
+      .send({ name: "task sections error", message: getErrorMessage(err) });
   }
 };
 
-export default tasks;
+export default sections;

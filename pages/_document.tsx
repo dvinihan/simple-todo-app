@@ -7,7 +7,7 @@ export default function Document() {
         <link href="/manifest.json" rel="manifest" />
         <link href="/favicon.ico" rel="apple-touch-icon"></link>
       </Head>
-      <body style={{ backgroundColor: "lightblue" }}>
+      <body>
         <Main />
         <NextScript />
       </body>

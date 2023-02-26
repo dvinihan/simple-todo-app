@@ -1,4 +1,4 @@
-import { useTasksQuery } from "../queries/useTasks";
+import { useTaskLists } from "../queries/useListsQuery";
 import { Task } from "../types";
 import { LoadingPage } from "../components/LoadingPage";
 import { useIdParams } from "../hooks/useIdParams";
@@ -20,7 +20,7 @@ const EditTask = () => {
   const backUrl =
     pageOrigin === "home" ? "/" : `${TASKS_ROUTE}?roomId=${task?.roomId}`;
 
-  const { isLoading } = useTasksQuery({
+  const { isLoading } = useTaskLists({
     onSuccess: (data) => {
       const { tasks } = data;
       const matchingTask = tasks.find((t) => t.id === taskId);

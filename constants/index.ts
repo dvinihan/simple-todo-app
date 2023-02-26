@@ -5,9 +5,6 @@ export const EDIT_ROOM_ROUTE = "/editRoom";
 export const NEW_TASK_ROUTE = "/newTask";
 export const NEW_ROOM_ROUTE = "/newRoom";
 
-export const ROOMS_QUERY_KEY = "rooms";
-export const TASKS_QUERY_KEY = "tasks";
-
 export enum Frequency {
   DAYS = "days",
   WEEKS = "weeks",

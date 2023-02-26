@@ -5,7 +5,7 @@ import {
   filterTasksByRoom,
 } from "../helpers/taskMap";
 import { useRoomsQuery } from "../queries/useRooms";
-import { useTasksQuery } from "../queries/useTasks";
+import { useTaskLists } from "../queries/useListsQuery";
 import { ExtendedTask } from "../types";
 import { useIdParams } from "./useIdParams";
 
@@ -16,7 +16,7 @@ export type TaskMap = {
 
 export const useGetTaskMap = (): TaskMap => {
   const { rooms } = useRoomsQuery();
-  const { tasks } = useTasksQuery();
+  const { tasks } = useTaskLists();
   const { roomId } = useIdParams();
 
   const tasksFilteredByRoom = filterTasksByRoom(tasks, roomId);

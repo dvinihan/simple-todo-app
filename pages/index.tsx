@@ -1,59 +1,18 @@
-import { Add } from "@mui/icons-material";
-import { Box, Fab } from "@mui/material";
-import { NEW_ROOM_ROUTE, TASKS_ROUTE } from "../constants";
-import { useRoomsQuery } from "../queries/useRooms";
-import { FocusedTaskList } from "../components/FocusedTaskList";
-import { ListItem } from "../components/ListItem";
-import Link from "next/link";
+import { useListsQuery } from "../queries/useListsQuery";
 import { LoadingPage } from "../components/LoadingPage";
-import { NavBar } from "../components/NavBar";
-import { useGetTaskMap } from "../hooks/useGetTaskMap";
+import { TaskList } from "../components/TaskList";
 
 const Home = () => {
-  const { rooms, isLoading } = useRoomsQuery();
+  const { data: allLists, isLoading } = useListsQuery();
 
-  const { overdueTasks, upcomingTasks } = useGetTaskMap();
+  // TODO determine default list to display
+  const list = allLists?.[0];
 
   if (isLoading) {
     return <LoadingPage />;
   }
 
-  return (
-    <>
-      <NavBar title="Rooms" />
-      <Box>
-        <FocusedTaskList
-          origin="home"
-          tasksToDisplay={overdueTasks}
-          title="Overdue tasks"
-        />
-        <FocusedTaskList
-          origin="home"
-          tasksToDisplay={upcomingTasks}
-          title="Upcoming tasks"
-        />
-        {rooms.map((room) => (
-          <ListItem
-            dataTestId="room-link"
-            href={`${TASKS_ROUTE}?roomId=${room.id}`}
-            key={room.id}
-            text={room.name}
-          />
-        ))}
-      </Box>
-      <Link href={NEW_ROOM_ROUTE}>
-        <Fab
-          sx={{
-            position: "fixed",
-            bottom: "16px",
-            right: "16px",
-          }}
-        >
-          <Add />
-        </Fab>
-      </Link>
-    </>
-  );
+  return list ? <TaskList list={list} /> : <div>No lists found</div>;
 };
 
 export default Home;

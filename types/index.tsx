@@ -1,36 +1,44 @@
 import { Frequency } from "../constants";
 
-export const NULL_ROOM_ID = -1;
-export const NULL_TASK_ID = -1;
-
-export class Room {
-  id: number;
+export class List {
+  _id: string;
   name: string;
 
-  constructor(props?: Partial<Room>) {
-    this.id = props?.id ?? NULL_ROOM_ID;
+  constructor(props?: Partial<List>) {
+    this._id = props?._id ?? "";
+    this.name = props?.name ?? "";
+  }
+}
+
+export class Section {
+  _id: string;
+  listId: string;
+  name: string;
+
+  constructor(props?: Partial<Section>) {
+    this._id = props?._id ?? "";
+    this.listId = props?.listId ?? "";
     this.name = props?.name ?? "";
   }
 }
 
 export class Task {
-  id: number;
+  _id: string;
+  sectionId: string;
   frequencyAmount: number;
   frequencyType: Frequency;
-  // i guess Dates can't be saved in react query, so i'll need to migrate to numbers
-  lastDone: Date | number;
+  dueDateMS: number;
   name: string;
-  roomId: number;
+  isCompleted: boolean;
 
   constructor(props?: Partial<Task>) {
-    this.id = props?.id ?? NULL_TASK_ID;
+    this._id = props?._id ?? "";
+    this.sectionId = props?.sectionId ?? "";
     this.frequencyAmount = props?.frequencyAmount ?? 0;
     this.frequencyType = props?.frequencyType ?? Frequency.WEEKS;
-    this.lastDone = props?.lastDone
-      ? new Date(props.lastDone).getTime()
-      : new Date().getTime();
+    this.dueDateMS = props?.dueDateMS ?? Date.now();
     this.name = props?.name ?? "";
-    this.roomId = props?.roomId ?? NULL_ROOM_ID;
+    this.isCompleted = props?.isCompleted ?? false;
   }
 }
 
