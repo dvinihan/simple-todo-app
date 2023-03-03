@@ -2,7 +2,7 @@ import { useTaskLists } from "../queries/useListsQuery";
 import { Task } from "../types";
 import { LoadingPage } from "../components/LoadingPage";
 import { useIdParams } from "../hooks/useIdParams";
-import EditTaskForm from "../components/EditTaskForm";
+import EditTaskForm from "../components/EditTask";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ErrorPage } from "../components/ErrorPage";
