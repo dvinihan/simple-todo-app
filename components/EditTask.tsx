@@ -8,7 +8,7 @@ type Props = {
   task: Task;
 };
 
-const EditTask = ({ task }: Props) => {
+export const EditTask = ({ task }: Props) => {
   const { refetch } = useTasksQuery();
   const { mutate: markCompleted } = useMarkCompleted({
     onSuccess: () => {
@@ -27,4 +27,3 @@ const EditTask = ({ task }: Props) => {
     </div>
   );
 };
-export default EditTask;

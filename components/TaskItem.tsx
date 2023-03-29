@@ -4,7 +4,7 @@ import { useMarkCompleted } from "../queries/useMarkCompleted";
 import { useTasksQuery } from "../queries/useTasksQuery";
 import { Task } from "../types";
 import Modal from "react-modal";
-import EditTask from "./EditTask";
+import { EditTask } from "./EditTask";
 
 type Props = {
   task: Task;
