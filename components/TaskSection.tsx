@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import { useMemo } from "react";
 import { useTasksQuery } from "../queries/useTasksQuery";
 import { Section } from "../types";
@@ -19,12 +20,14 @@ export const TaskSection = ({ section }: Props) => {
   );
 
   return (
-    <div>
-      <h3 key={section._id}>{section.name}</h3>
+    <Box sx={{ margin: "20px 0" }}>
+      <Typography key={section._id} variant="h4">
+        {section.name}
+      </Typography>
       {sectionTasks?.map((task) => (
         <TaskItem key={task._id} task={task} />
       ))}
       <hr />
-    </div>
+    </Box>
   );
 };

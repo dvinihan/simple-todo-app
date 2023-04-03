@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getErrorMessage } from "../../helpers/getErrorMessage";
 import clientPromise from "../../util/mongodb";
 
-const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
+const saveTask = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const client = await clientPromise;
 
@@ -22,4 +22,4 @@ const editTask = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export default editTask;
+export default saveTask;
